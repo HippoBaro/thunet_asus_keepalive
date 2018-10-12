@@ -5,6 +5,7 @@
 #ifndef THUNET_ASUS_KEEPALIVE_STATUS_RESPONSE_HPP
 #define THUNET_ASUS_KEEPALIVE_STATUS_RESPONSE_HPP
 
+#include <chrono>
 #include <boost/utility/string_view.hpp>
 #include <boost/system/error_code.hpp>
 
