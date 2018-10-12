@@ -5,9 +5,8 @@
 #ifndef THUNET_ASUS_KEEPALIVE_JSON_PAYLOAD_HPP
 #define THUNET_ASUS_KEEPALIVE_JSON_PAYLOAD_HPP
 
-#include <vector>
 #include <json/gason.hpp>
-#include <error_code.hpp>
+#include <boost/system/error_code.hpp>
 #include <boost/utility/string_view.hpp>
 #include <boost/optional.hpp>
 

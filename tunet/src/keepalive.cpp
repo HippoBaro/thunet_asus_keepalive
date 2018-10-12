@@ -2,22 +2,16 @@
 // Created by Hippolyte Barraud on 10/10/18.
 //
 
-#include <cstdlib>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/socket_base.hpp>
 #include <boost/asio/connect.hpp>
-#include <boost/beast/http/message.hpp>
-#include <boost/beast/http/string_body.hpp>
-#include <boost/beast/http/field.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/http.hpp>
-#include <boost/beast/http/write.hpp>
-#include <boost/beast/http/read.hpp>
-#include <payloads/challenge_response.hpp>
-#include <payloads/login_request.hpp>
 #include <error_code.hpp>
 #include <payloads/challenge_request.hpp>
+#include <payloads/challenge_response.hpp>
+#include <payloads/login_request.hpp>
 #include <payloads/login_response.hpp>
 #include <payloads/status_response.hpp>
 

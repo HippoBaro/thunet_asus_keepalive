@@ -4,7 +4,7 @@
 
 #include <boost/algorithm/string/join.hpp>
 #include <crypto/charset.hpp>
-#include "payloads/challenge_request.hpp"
+#include <payloads/challenge_request.hpp>
 
 namespace tunet::payloads {
     challenge_request::challenge_request(boost::string_view username, boost::string_view ip) :

@@ -6,8 +6,6 @@
 #define THUNET_ASUS_KEEPALIVE_CHALLENGE_HPP
 
 #include <boost/utility/string_view.hpp>
-#include <boost/beast/http/message.hpp>
-#include <boost/beast/http/string_body.hpp>
 #include "json_payload.hpp"
 
 namespace tunet::payloads {

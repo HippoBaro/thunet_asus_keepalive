@@ -9,9 +9,6 @@
 #include <boost/utility/string_view.hpp>
 #include <boost/system/error_code.hpp>
 
-//maxiao17,   1539297477,      1539312425,      175117807,                  13178402,                   0,  14383359025,          915834,                   59.66.229.24,   0,  ,   0.000000,  0
-//'Username', 'Time of login', 'Time of query', 'Session traffic incoming', 'Session traffic outgoing', "", 'Cumulative traffic', 'Cumulative online time', 'IPv4 Address', "", "", 'Balance', ""
-
 namespace tunet::payloads {
 
     struct status_response {

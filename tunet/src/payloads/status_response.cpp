@@ -4,7 +4,7 @@
 
 #include <string>
 #include <boost/algorithm/string.hpp>
-#include "payloads/status_response.hpp"
+#include <payloads/status_response.hpp>
 
 namespace boost {
     inline void throw_exception(std::exception const &) {

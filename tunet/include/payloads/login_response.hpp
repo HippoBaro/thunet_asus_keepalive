@@ -5,7 +5,6 @@
 #ifndef THUNET_ASUS_KEEPALIVE_LOGIN_RESPONSE_HPP
 #define THUNET_ASUS_KEEPALIVE_LOGIN_RESPONSE_HPP
 
-#include <boost/optional.hpp>
 #include <boost/utility/string_view.hpp>
 #include <boost/system/error_code.hpp>
 #include "payloads/json_payload.hpp"

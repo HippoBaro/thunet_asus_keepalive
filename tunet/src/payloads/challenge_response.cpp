@@ -3,7 +3,6 @@
 //
 
 #include <payloads/challenge_response.hpp>
-#include "payloads/challenge_response.hpp"
 #include <error_code.hpp>
 
 tunet::payloads::challenge_response::challenge_response(boost::string_view json, boost::system::error_code &err) :
