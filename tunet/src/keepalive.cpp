@@ -19,6 +19,7 @@
 #include <error_code.hpp>
 #include <payloads/challenge_request.hpp>
 #include <payloads/login_response.hpp>
+#include <payloads/status_response.hpp>
 
 namespace boost {
     inline void throw_exception(std::exception const &) {
@@ -29,19 +30,10 @@ namespace boost {
 
 constexpr auto thu_network_host = "auth4.tsinghua.edu.cn";
 
-template<typename Request, typename Response>
+template<typename Response>
 static boost::optional<Response>
-post(boost::string_view target, boost::asio::ip::tcp::socket &socket, Request const &request,
+fetch(boost::beast::http::request<boost::beast::http::string_body> req, boost::asio::ip::tcp::socket &socket,
      boost::system::error_code &ec) {
-    boost::beast::http::request<boost::beast::http::string_body> req{boost::beast::http::verb::post, target, 11};
-    req.set(boost::beast::http::field::host, thu_network_host);
-    req.set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
-    req.set(boost::beast::http::field::accept,
-            "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01");
-
-    req.body() = request.to_form_urlencoded();
-    req.prepare_payload();
-
     boost::beast::http::request_serializer<boost::beast::http::string_body> s{req};
     boost::beast::http::write(socket, s, ec);
     if (ec) {
@@ -67,20 +59,44 @@ post(boost::string_view target, boost::asio::ip::tcp::socket &socket, Request co
     return response;
 }
 
+template<typename Request, typename Response>
+static boost::optional<Response>
+post(boost::string_view target, boost::asio::ip::tcp::socket &socket, Request const &request,
+     boost::system::error_code &ec) {
+    boost::beast::http::request<boost::beast::http::string_body> req{boost::beast::http::verb::post, target, 11};
+    req.set(boost::beast::http::field::host, thu_network_host);
+    req.set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
+    req.body() = request.to_form_urlencoded();
+    req.prepare_payload();
+
+    return fetch<Response>(req, socket, ec);
+}
+
+template<typename Response>
+static boost::optional<Response>
+get(boost::string_view target, boost::asio::ip::tcp::socket &socket, boost::system::error_code &ec) {
+    boost::beast::http::request<boost::beast::http::string_body> req{boost::beast::http::verb::get, target, 11};
+    req.set(boost::beast::http::field::host, thu_network_host);
+    req.set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
+    req.prepare_payload();
+
+    return fetch<Response>(req, socket, ec);
+}
+
 namespace tunet {
-    void
-    keepalive(boost::asio::io_context &ioc, std::vector<std::pair<boost::string_view, boost::string_view>> credentials,
-              boost::system::error_code &ec) noexcept {
+    boost::optional<tunet::payloads::login_response>
+    login(boost::asio::io_context &ioc, std::vector<std::pair<boost::string_view, boost::string_view>> credentials,
+          boost::system::error_code &ec) noexcept {
         boost::asio::ip::tcp::resolver resolver{ioc};
         auto const hosts = resolver.resolve(thu_network_host, "http", ec);
         if (ec) {
-            return;
+            return {};
         }
 
         boost::asio::ip::tcp::socket socket{ioc};
         boost::asio::connect(socket, hosts.begin(), hosts.end(), ec);
         if (ec) {
-            return;
+            return {};
         }
 
         for (const auto &credential : credentials) {
@@ -88,23 +104,37 @@ namespace tunet {
             auto token = post<payloads::challenge_request, payloads::challenge_response>("/cgi-bin/get_challenge",
                                                                                          socket, challenge_req, ec);
             if (ec || !token) {
-                return;
+                return {};
             }
 
             auto request = tunet::payloads::login_request(credential.first, credential.second, "", *token->operator[]<boost::string_view>("challenge"));
             auto response = post<payloads::login_request, payloads::login_response>("/cgi-bin/srun_portal", socket,
                                                                                     request, ec);
-            if (ec) {
-                return;
-            }
             if (response) {
-                break;
+                return response;
             }
+        }
+        return {};
+    }
+
+    boost::optional<tunet::payloads::status_response>
+    status(boost::asio::io_context &ioc, boost::system::error_code &ec) noexcept {
+        boost::asio::ip::tcp::resolver resolver{ioc};
+        auto const hosts = resolver.resolve(thu_network_host, "http", ec);
+        if (ec) {
+            return {};
         }
 
-        socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
+        boost::asio::ip::tcp::socket socket{ioc};
+        boost::asio::connect(socket, hosts.begin(), hosts.end(), ec);
         if (ec) {
-            return;
+            return {};
         }
+
+        auto status = get<tunet::payloads::status_response>("/rad_user_info.php", socket, ec);
+        if (ec || !status || !status->connected) {
+            return {};
+        }
+        return status;
     }
 }

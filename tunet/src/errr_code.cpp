@@ -2,7 +2,7 @@
 // Created by Hippolyte Barraud on 10/11/18.
 //
 
-# include <error_code.hpp>
+#include <error_code.hpp>
 
 namespace {
 
@@ -47,8 +47,8 @@ namespace {
                 return "NAS PORT binding error. (NAS PORT绑定错误。)";
             case tunet_service_error::connection_number_exceeded:
                 return "The number of connections is full. Please login to http://usereg.tsinghua.edu.cn "
-                       "and choose to place your IP address offline. (连接数已满，请登录http://usereg.tsi"
-                       "nghua.edu.cn，选择下线您的IP地址。)";
+                       "and choose to place your IP address offline. "
+                       "(连接数已满，请登录http://usereg.tsinghua.edu.cn，选择下线您的IP地址。)";
             case tunet_service_error::no_eligible_product:
                 return "No eligible products were found. (找不到符合条件的产品。)";
             case tunet_service_error::no_eligible_billing:

@@ -7,9 +7,8 @@
 
 #include <boost/optional.hpp>
 #include <boost/utility/string_view.hpp>
-#include <boost/beast/http/string_body.hpp>
-#include <json/gason.hpp>
-#include "json_payload.hpp"
+#include <boost/system/error_code.hpp>
+#include "payloads/json_payload.hpp"
 
 namespace tunet::payloads {
     struct login_response : public json_payload {

@@ -16,9 +16,27 @@ int main(int ac, char** av)
         return EXIT_FAILURE;
     }
 
-    tunet::keepalive(ioc, {std::make_pair<boost::string_view>(av[1], av[2])}, ec);
-    if (ec) {
-        printf("Got error: %s\n", ec.message().data());
+    {
+        auto connection_status = tunet::status(ioc, ec);
+        if (ec) {
+            printf("Got error: %s\n", ec.message().data());
+        }
+
+        if (connection_status) {
+            printf("You are online, %s\n", connection_status->username.data());
+            return EXIT_SUCCESS;
+        }
     }
-    return EXIT_SUCCESS;
+
+    {
+        auto login_attempt = tunet::login(ioc, {std::make_pair<boost::string_view>(av[1], av[2])}, ec);
+        if (ec) {
+            printf("Got error: %s\n", ec.message().data());
+        }
+        else {
+            printf("You are now logged on, %s\n", login_attempt->operator[]<boost::string_view>("username")->data());
+        }
+        return EXIT_SUCCESS;
+    }
+
 }

@@ -19,9 +19,9 @@ add_library(tunet
         include/tunet.hpp
         src/json/gason.cpp
         src/payloads/challenge_response.cpp
-        src/payloads/challenge_response.hpp
+        include/payloads/challenge_response.hpp
         src/payloads/login_request.cpp
-        src/payloads/login_request.hpp
+        include/payloads/login_request.hpp
         src/crypto/hmac.hpp
         src/crypto/md5.hpp
         src/crypto/md5.cpp
@@ -34,14 +34,14 @@ add_library(tunet
         src/crypto/charset.cpp
         src/crypto/charset.hpp
         src/keepalive.cpp
-        src/error_code.hpp
+        include/error_code.hpp
         src/errr_code.cpp
         src/payloads/challenge_request.cpp
-        src/payloads/challenge_request.hpp
+        include/payloads/challenge_request.hpp
         src/payloads/login_response.cpp
-        src/payloads/login_response.hpp
+        include/payloads/login_response.hpp
         src/payloads/json_payload.cpp
-        src/payloads/json_payload.hpp)
+        include/payloads/json_payload.hpp src/payloads/status_response.cpp include/payloads/status_response.hpp)
 
 target_include_directories(tunet
         PUBLIC
