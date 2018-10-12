@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/socket_base.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/string_body.hpp>
@@ -14,7 +15,6 @@
 #include <boost/beast/http/write.hpp>
 #include <boost/beast/http/read.hpp>
 #include <payloads/challenge_response.hpp>
-#include <boost/asio/socket_base.hpp>
 #include <payloads/login_request.hpp>
 #include <error_code.hpp>
 #include <payloads/challenge_request.hpp>
@@ -36,6 +36,9 @@ post(boost::string_view target, boost::asio::ip::tcp::socket &socket, Request co
     boost::beast::http::request<boost::beast::http::string_body> req{boost::beast::http::verb::post, target, 11};
     req.set(boost::beast::http::field::host, thu_network_host);
     req.set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
+    req.set(boost::beast::http::field::accept,
+            "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01");
+
     req.body() = request.to_form_urlencoded();
     req.prepare_payload();
 
@@ -52,7 +55,12 @@ post(boost::string_view target, boost::asio::ip::tcp::socket &socket, Request co
         return {};
     }
 
-    auto response = Response::make(res, ec);
+    if (res.result() != boost::beast::http::status::ok) {
+        ec = boost::beast::errc::make_error_code(boost::beast::errc::protocol_error);
+        return {};
+    }
+
+    auto response = Response(res.body(), ec);
     if (ec) {
         return {};
     }
@@ -83,12 +91,14 @@ namespace tunet {
                 return;
             }
 
-            auto request = tunet::payloads::login_request(credential.first, credential.second, "", token->uid);
-            if (post<payloads::login_request, payloads::login_response>("/cgi-bin/srun_portal", socket, request, ec)) {
-                break;
-            }
+            auto request = tunet::payloads::login_request(credential.first, credential.second, "", *token->operator[]<boost::string_view>("challenge"));
+            auto response = post<payloads::login_request, payloads::login_response>("/cgi-bin/srun_portal", socket,
+                                                                                    request, ec);
             if (ec) {
                 return;
+            }
+            if (response) {
+                break;
             }
         }
 

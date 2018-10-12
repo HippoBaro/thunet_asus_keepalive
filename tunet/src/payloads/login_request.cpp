@@ -34,7 +34,7 @@ tunet::payloads::login_request::login_request(boost::string_view username, boost
 
 std::string tunet::payloads::login_request::to_form_urlencoded() const {
     auto urlencoded = boost::algorithm::join<std::initializer_list<std::string>>(
-            {"action=", urlencode(action), "&username=", urlencode(username), "&password=", urlencode(password),
+            {"callback=x", "&action=", urlencode(action), "&username=", urlencode(username), "&password=", urlencode(password),
              "&ac_id=", urlencode(_ac_id), "&type=", urlencode(_type), "&n=", urlencode(_n), "&ip=", urlencode(ip),
              "&info=", urlencode(_info), "&chksum=", urlencode(_chksum)}, "");
     return urlencoded;

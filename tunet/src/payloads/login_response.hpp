@@ -8,19 +8,19 @@
 #include <boost/optional.hpp>
 #include <boost/utility/string_view.hpp>
 #include <boost/beast/http/string_body.hpp>
+#include <json/gason.hpp>
+#include "json_payload.hpp"
 
 namespace tunet::payloads {
-    struct login_response {
+    struct login_response : public json_payload {
+    public:
         login_response() = delete;
 
         login_response(login_response const &) = delete;
 
         login_response(login_response &&) = default;
 
-        explicit login_response(boost::string_view);
-
-        static boost::optional<login_response>
-        make(boost::beast::http::response<boost::beast::http::string_body> &, boost::system::error_code &err);
+        explicit login_response(boost::string_view json, boost::system::error_code &err);
     };
 }
 

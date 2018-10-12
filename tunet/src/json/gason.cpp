@@ -332,3 +332,9 @@ int jsonParse(char *s, char **endptr, JsonValue *value, JsonAllocator &allocator
     }
     return JSON_BREAKING_BAD;
 }
+
+JsonNode * get_next(JsonNode **origin) {
+    auto ret = *origin;
+    *origin = (*origin)->next;
+    return ret;
+}

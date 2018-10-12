@@ -133,3 +133,4 @@ public:
 };
 
 int jsonParse(char *str, char **endptr, JsonValue *value, JsonAllocator &allocator);
+JsonNode * get_next(JsonNode **origin);

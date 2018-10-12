@@ -39,7 +39,10 @@ add_library(tunet
         src/payloads/challenge_request.cpp
         src/payloads/challenge_request.hpp
         src/payloads/login_response.cpp
-        src/payloads/login_response.hpp)
+        src/payloads/login_response.hpp
+        src/payloads/response.hpp
+        src/payloads/json_payload.cpp
+        src/payloads/json_payload.hpp)
 
 target_include_directories(tunet
         PUBLIC
