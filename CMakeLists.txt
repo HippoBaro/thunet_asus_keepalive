@@ -17,7 +17,6 @@ if(STATIC_BIN)
 endif(STATIC_BIN)
 
 target_compile_options(thunet_asus_keepalive PRIVATE
-        -fno-exceptions
         -fno-rtti
         -Wall
         -Wextra
