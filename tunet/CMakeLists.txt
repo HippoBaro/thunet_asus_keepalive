@@ -74,7 +74,7 @@ target_compile_options(tunet PRIVATE
 
 target_compile_definitions(tunet PUBLIC BOOST_NO_RTTI BOOST_NO_TYPEID BOOST_EXCEPTION_DISABLE BOOST_NO_EXCEPTIONS)
 
-target_link_libraries(tunet PUBLIC Boost::system PRIVATE Threads::Threads)
+target_link_libraries(tunet PUBLIC Boost::system)
 
 if(STATIC_BIN)
     target_compile_options(tunet PRIVATE -Wl,--gc-sections)
