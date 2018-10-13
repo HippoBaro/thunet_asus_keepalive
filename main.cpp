@@ -8,7 +8,21 @@ namespace boost {
 } // namespace boost
 
 #include <boost/beast/core.hpp>
-#include <boost/beast/http.hpp>
+#include <boost/beast/http/basic_parser.hpp>
+#include <boost/beast/http/error.hpp>
+#include <boost/beast/http/fields.hpp>
+#include <boost/beast/http/message.hpp>
+#include <boost/beast/http/parser.hpp>
+#include <boost/beast/http/read.hpp>
+#include <boost/beast/http/rfc7230.hpp>
+#include <boost/beast/http/serializer.hpp>
+#include <boost/beast/http/span_body.hpp>
+#include <boost/beast/http/status.hpp>
+#include <boost/beast/http/string_body.hpp>
+#include <boost/beast/http/type_traits.hpp>
+#include <boost/beast/http/vector_body.hpp>
+#include <boost/beast/http/verb.hpp>
+#include <boost/beast/http/write.hpp>
 #include <boost/beast/version.hpp>
 #include <boost/asio.hpp>
 #include <chrono>
