@@ -7,6 +7,13 @@ namespace boost {
 
 } // namespace boost
 
+namespace boost::beast::http::detail {
+    template<class DynamicBuffer>
+    bool dynamic_prepare(
+            boost::optional<typename DynamicBuffer::const_buffers_type>& buffer,
+            std::size_t amount);
+} // detail
+
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
