@@ -64,7 +64,7 @@ user_settings user_settings::make_from_fs(boost::system::error_code &err) {
     rewind(f);
 
     std::string content(fsize + 1, '\0');
-    fread(content.data(), fsize, 1, f);
+    fread(const_cast<char *>(content.data()), fsize, 1, f); //work around GCC 6 bug
     fclose(f);
 
     return user_settings(content, err);
