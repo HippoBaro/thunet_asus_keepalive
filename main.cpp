@@ -19,6 +19,8 @@ namespace boost {
 #include <periodic_scheduler.hpp>
 
 #include <user_settings.hpp>
+#include <logger.hpp>
+#include <keepalive_task.hpp>
 
 namespace ip = boost::asio::ip;         // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio.hpp>
@@ -185,15 +187,24 @@ http_server(tcp::acceptor &acceptor, tcp::socket &socket) {
                           });
 }
 
+static std::unique_ptr<user_settings> settings = nullptr;
+
 int main(int ac, char **av) {
     boost::system::error_code ec;
     boost::asio::io_context ioc{1};
 
-    user_settings s("", ec);
+    user_settings s = user_settings::make_from_fs(ec);
+
+    if (ec) {
+        logger_(ec.message(), log_level::critical);
+        return EXIT_FAILURE;
+    }
 
     periodic_scheduler schd;
 
-    schd.addTask(ioc, "test", [] (auto &err) { printf("toto\n");}, std::chrono::seconds(100));
+    schd.addTask(ioc, std::make_unique<keepalive_task>(ioc, *settings));
+
+    //schd.addTask(ioc, "test", [] (auto &err) { printf("toto\n");}, std::chrono::seconds(100));
 
     auto const address = boost::asio::ip::make_address("0.0.0.0");
     unsigned short port = 62345;
@@ -207,28 +218,4 @@ int main(int ac, char **av) {
     if (ac < 3) {
         return EXIT_FAILURE;
     }
-
-    {
-        auto connection_status = tunet::status(ioc, ec);
-        if (ec) {
-            printf("Got error: %s\n", ec.message().data());
-        }
-
-        if (connection_status) {
-            printf("You are online, %s\n", connection_status->username.data());
-            return EXIT_SUCCESS;
-        }
-    }
-
-    {
-        auto login_attempt = tunet::login(ioc, {std::make_pair<boost::string_view>(av[1], av[2])}, ec);
-        if (ec) {
-            printf("Got error: %s\n", ec.message().data());
-        }
-        else {
-            printf("You are now logged on, %s\n", login_attempt->operator[]<boost::string_view>("username")->data());
-        }
-        return EXIT_SUCCESS;
-    }
-
 }

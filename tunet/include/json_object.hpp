@@ -17,7 +17,7 @@ struct json_object {
 
 public:
 
-    json_object() = delete;
+    json_object() = default;
 
     json_object(json_object const&) = delete;
 

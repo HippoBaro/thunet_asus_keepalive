@@ -14,8 +14,7 @@
 
 class periodic_scheduler : boost::noncopyable {
 public:
-    void addTask(boost::asio::io_context &ctx, boost::string_view name,
-                 std::function<void(boost::system::error_code &)> const &task, std::chrono::seconds interval);
+    void addTask(boost::asio::io_context &ctx, std::unique_ptr<periodic_task> task);
 
 private:
     std::vector<std::unique_ptr<periodic_task>> tasks;

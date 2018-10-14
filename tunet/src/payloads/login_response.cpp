@@ -5,8 +5,15 @@
 #include <payloads/login_response.hpp>
 #include <error_code.hpp>
 
+namespace boost {
+    inline void throw_exception(std::exception const &) {
+        std::abort();
+    }
+
+} // namespace boost
+
 tunet::payloads::login_response::login_response(boost::string_view json, boost::system::error_code &err) :
-        json_object(json, err) {
+        json_object(json.substr(2, json.size() - 3), err) {
     if (err) {
         return;
     }

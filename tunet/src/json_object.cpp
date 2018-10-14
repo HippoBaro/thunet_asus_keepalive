@@ -12,7 +12,7 @@ namespace boost {
 
 } // namespace boost
 
-json_object::json_object(boost::string_view json, boost::system::error_code &err) noexcept : _source(json.substr(2, json.size() - 3)) {
+json_object::json_object(boost::string_view json, boost::system::error_code &err) noexcept : _source(json) {
     auto begin = const_cast<char *>(_source.data()); //Work-around GCC 6.4 bug
     auto end = &(*(_source.end() - 1));
     int status = jsonParse(begin, &end, &_value, _alloc);

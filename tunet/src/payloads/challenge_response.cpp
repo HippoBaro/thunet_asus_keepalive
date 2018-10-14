@@ -5,8 +5,15 @@
 #include <payloads/challenge_response.hpp>
 #include <error_code.hpp>
 
+namespace boost {
+    inline void throw_exception(std::exception const &) {
+        std::abort();
+    }
+
+} // namespace boost
+
 tunet::payloads::challenge_response::challenge_response(boost::string_view json, boost::system::error_code &err) :
-    json_object(json, err) {
+    json_object(json.substr(2, json.size() - 3), err) {
     if (err) {
         return;
     }

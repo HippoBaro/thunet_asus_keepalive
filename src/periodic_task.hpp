@@ -12,23 +12,28 @@
 #include <boost/noncopyable.hpp>
 #include <boost/utility/string_view.hpp>
 #include <boost/asio.hpp>
+#include <logger.hpp>
 
 struct periodic_task : boost::noncopyable {
-    periodic_task(boost::asio::io_context &ctx, boost::string_view const &name, std::chrono::seconds interval,
-                  std::function<void(boost::system::error_code &err)> task);
+protected:
+    periodic_task(boost::asio::io_context &ctx);
+    void log(boost::string_view, log_level = log_level::info);
 
+public:
+    virtual ~periodic_task();
+
+    virtual int task(boost::asio::io_context &ctx) = 0;
+    virtual boost::string_view name() = 0;
+
+private:
     void execute(boost::system::error_code const &e);
 
     void start();
 
-private:
     void start_wait();
 
     boost::asio::io_context &io_context;
     boost::asio::deadline_timer timer;
-    std::function<void(boost::system::error_code &err)> task;
-    std::string name;
-    int interval;
 };
 
 

@@ -9,9 +9,18 @@
 #include <periodic_task.hpp>
 #include <user_settings.hpp>
 
-//struct keepalive_task : public periodic_task {
-//    keepalive_task(std::weak_ptr<user_settings> usr);
-//};
+struct keepalive_task : public periodic_task {
+    user_settings const& settings;
+
+    keepalive_task(boost::asio::io_context &ioc, user_settings const& settings);
+
+    int task(boost::asio::io_context &ctx) override;
+
+    virtual ~keepalive_task();
+
+    boost::string_view name() override;
+
+};
 
 
 #endif //THUNET_ASUS_KEEPALIVE_KEEPALIVE_TAKS_HPP
