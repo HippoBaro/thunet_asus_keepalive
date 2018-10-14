@@ -37,12 +37,11 @@ user_settings::user_settings(boost::string_view json, boost::system::error_code 
 
 user_settings::user_settings() {}
 
-static constexpr bool is_dev = false;
 user_settings user_settings::make_from_fs(boost::system::error_code &err) {
     logger_("Locating setting file...", log_level::debug);
 
     boost::string_view directory;
-    if constexpr (!is_dev) {
+#ifndef __DEV__
         char path[4096];
         ssize_t count = readlink("/proc/self/exe", path, 4096);
         if (count == -1) {
@@ -50,10 +49,9 @@ user_settings user_settings::make_from_fs(boost::system::error_code &err) {
             return user_settings();
         }
         directory = dirname(path);
-    }
-    else {
+#else
         directory = "/Users/hbarraud";
-    }
+#endif
 
     logger_("Reading setting file at " + (std::string(directory) + "/settings.json"), log_level::info);
     FILE *f = fopen((std::string(directory) + "/settings.json").data(), "rb");
