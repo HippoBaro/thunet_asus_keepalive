@@ -52,7 +52,6 @@ target_include_directories(tunet
         )
 
 target_compile_options(tunet PRIVATE
-        -fno-exceptions
         -fno-rtti
         -Wall
         -Wextra

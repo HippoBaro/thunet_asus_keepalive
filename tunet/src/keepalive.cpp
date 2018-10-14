@@ -122,7 +122,7 @@ namespace tunet {
                 return boost::optional<tunet::payloads::login_response>{};
             }
 
-            auto request = tunet::payloads::login_request(credential.first, credential.second, "", *token->operator[]<boost::string_view>("challenge"));
+            tunet::payloads::login_request request(credential.first, credential.second, "", *token->operator[]<boost::string_view>("challenge"));
             auto response = post<payloads::login_request, payloads::login_response>("/cgi-bin/srun_portal", socket,
                                                                                     request, ec);
             if (response) {

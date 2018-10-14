@@ -16,6 +16,7 @@ namespace tunet::payloads {
         std::string ip;
 
         login_request() = delete;
+        login_request(login_request &&) = default;
         login_request(boost::string_view username, boost::string_view password, boost::string_view ip, boost::string_view challenge);
 
         std::string to_form_urlencoded() const;
