@@ -7,14 +7,12 @@
 
 #include <boost/utility/string_view.hpp>
 #include <boost/system/error_code.hpp>
-#include "payloads/json_payload.hpp"
+#include <json_object.hpp>
 
 namespace tunet::payloads {
-    struct login_response : public json_payload {
+    struct login_response : public json_object {
     public:
         login_response() = delete;
-
-        login_response(login_response const &) = delete;
 
         login_response(login_response &&) = default;
 

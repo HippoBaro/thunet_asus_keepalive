@@ -5,10 +5,11 @@
 #ifndef THUNET_ASUS_KEEPALIVE_LOGIN_PAYLOAD_HPP
 #define THUNET_ASUS_KEEPALIVE_LOGIN_PAYLOAD_HPP
 
+#include <boost/noncopyable.hpp>
 #include <boost/utility/string_view.hpp>
 
 namespace tunet::payloads {
-    struct login_request {
+    struct login_request : boost::noncopyable {
         std::string action = "login";
         std::string username;
         std::string password;

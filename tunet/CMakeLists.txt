@@ -40,8 +40,8 @@ add_library(tunet
         include/payloads/challenge_request.hpp
         src/payloads/login_response.cpp
         include/payloads/login_response.hpp
-        src/payloads/json_payload.cpp
-        include/payloads/json_payload.hpp src/payloads/status_response.cpp include/payloads/status_response.hpp)
+        src/json_object.cpp
+        include/json_object.hpp src/payloads/status_response.cpp include/payloads/status_response.hpp)
 
 target_include_directories(tunet
         PUBLIC
@@ -52,6 +52,7 @@ target_include_directories(tunet
         )
 
 target_compile_options(tunet PRIVATE
+        -fno-exceptions
         -fno-rtti
         -Wall
         -Wextra

@@ -7,13 +7,6 @@ namespace boost {
 
 } // namespace boost
 
-namespace boost::beast::http::detail {
-    template<class DynamicBuffer>
-    bool dynamic_prepare(
-            boost::optional<typename DynamicBuffer::const_buffers_type>& buffer,
-            std::size_t amount);
-} // detail
-
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
@@ -23,6 +16,9 @@ namespace boost::beast::http::detail {
 #include <ctime>
 #include <memory>
 #include <string>
+#include <periodic_scheduler.hpp>
+
+#include <user_settings.hpp>
 
 namespace ip = boost::asio::ip;         // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio.hpp>
@@ -192,6 +188,12 @@ http_server(tcp::acceptor &acceptor, tcp::socket &socket) {
 int main(int ac, char **av) {
     boost::system::error_code ec;
     boost::asio::io_context ioc{1};
+
+    user_settings s("", ec);
+
+    periodic_scheduler schd;
+
+    schd.addTask(ioc, "test", [] (auto &err) { printf("toto\n");}, std::chrono::seconds(100));
 
     auto const address = boost::asio::ip::make_address("0.0.0.0");
     unsigned short port = 62345;

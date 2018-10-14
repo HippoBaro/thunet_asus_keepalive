@@ -29,7 +29,7 @@ namespace tunet::payloads {
 
         status_response() = delete;
 
-        status_response(status_response const &) = delete;
+        status_response(status_response const&) = delete;
 
         status_response(status_response &&) = default;
 

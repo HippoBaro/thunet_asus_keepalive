@@ -6,7 +6,7 @@
 #include <error_code.hpp>
 
 tunet::payloads::login_response::login_response(boost::string_view json, boost::system::error_code &err) :
-        json_payload(json, err) {
+        json_object(json, err) {
     if (err) {
         return;
     }

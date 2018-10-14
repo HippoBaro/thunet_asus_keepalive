@@ -6,14 +6,12 @@
 #define THUNET_ASUS_KEEPALIVE_CHALLENGE_HPP
 
 #include <boost/utility/string_view.hpp>
-#include "json_payload.hpp"
+#include "json_object.hpp"
 
 namespace tunet::payloads {
 
-    struct challenge_response : public json_payload {
+    struct challenge_response : public json_object {
         challenge_response() = delete;
-
-        challenge_response(challenge_response const &) = delete;
 
         challenge_response(challenge_response &&) = default;
 

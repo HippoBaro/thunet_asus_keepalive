@@ -102,59 +102,54 @@ namespace tunet {
     boost::optional<tunet::payloads::login_response>
     login(boost::asio::io_context &ioc, std::vector<std::pair<boost::string_view, boost::string_view>> credentials,
           boost::system::error_code &ec) noexcept {
-
-        return circuit_breaker_try(ec, [&] {
-            boost::asio::ip::tcp::resolver resolver{ioc};
-            auto const hosts = resolver.resolve(thu_network_host, "http", ec);
-            if (ec) {
-                return boost::optional<tunet::payloads::login_response>{};
-            }
-
-            boost::asio::ip::tcp::socket socket{ioc};
-            boost::asio::connect(socket, hosts.begin(), hosts.end(), ec);
-            if (ec) {
-                return boost::optional<tunet::payloads::login_response>{};
-            }
-
-            for (const auto &credential : credentials) {
-                tunet::payloads::challenge_request challenge_req(credential.first, "");
-                auto token = post<payloads::challenge_request, payloads::challenge_response>("/cgi-bin/get_challenge",
-                                                                                             socket, challenge_req, ec);
-                if (ec || !token) {
-                    return boost::optional<tunet::payloads::login_response>{};
-                }
-
-                auto request = tunet::payloads::login_request(credential.first, credential.second, "", *token->operator[]<boost::string_view>("challenge"));
-                auto response = post<payloads::login_request, payloads::login_response>("/cgi-bin/srun_portal", socket,
-                                                                                        request, ec);
-                if (response) {
-                    return response;
-                }
-            }
+        boost::asio::ip::tcp::resolver resolver{ioc};
+        auto const hosts = resolver.resolve(thu_network_host, "http", ec);
+        if (ec) {
             return boost::optional<tunet::payloads::login_response>{};
-        });
+        }
+
+        boost::asio::ip::tcp::socket socket{ioc};
+        boost::asio::connect(socket, hosts.begin(), hosts.end(), ec);
+        if (ec) {
+            return boost::optional<tunet::payloads::login_response>{};
+        }
+
+        for (const auto &credential : credentials) {
+            tunet::payloads::challenge_request challenge_req(credential.first, "");
+            auto token = post<payloads::challenge_request, payloads::challenge_response>("/cgi-bin/get_challenge",
+                                                                                         socket, challenge_req, ec);
+            if (ec || !token) {
+                return boost::optional<tunet::payloads::login_response>{};
+            }
+
+            auto request = tunet::payloads::login_request(credential.first, credential.second, "", *token->operator[]<boost::string_view>("challenge"));
+            auto response = post<payloads::login_request, payloads::login_response>("/cgi-bin/srun_portal", socket,
+                                                                                    request, ec);
+            if (response) {
+                return response;
+            }
+        }
+        return boost::optional<tunet::payloads::login_response>{};
     }
 
     boost::optional<tunet::payloads::status_response>
     status(boost::asio::io_context &ioc, boost::system::error_code &ec) noexcept {
-        return circuit_breaker_try(ec, [&] {
-            boost::asio::ip::tcp::resolver resolver{ioc};
-            auto const hosts = resolver.resolve(thu_network_host, "http", ec);
-            if (ec) {
-                return boost::optional<tunet::payloads::status_response>{};
-            }
+        boost::asio::ip::tcp::resolver resolver{ioc};
+        auto const hosts = resolver.resolve(thu_network_host, "http", ec);
+        if (ec) {
+            return boost::optional<tunet::payloads::status_response>{};
+        }
 
-            boost::asio::ip::tcp::socket socket{ioc};
-            boost::asio::connect(socket, hosts.begin(), hosts.end(), ec);
-            if (ec) {
-                return boost::optional<tunet::payloads::status_response>{};
-            }
+        boost::asio::ip::tcp::socket socket{ioc};
+        boost::asio::connect(socket, hosts.begin(), hosts.end(), ec);
+        if (ec) {
+            return boost::optional<tunet::payloads::status_response>{};
+        }
 
-            auto status = get<tunet::payloads::status_response>("/rad_user_info.php", socket, ec);
-            if (ec || !status || !status->connected) {
-                return boost::optional<tunet::payloads::status_response>{};
-            }
-            return status;
-        });
+        auto status = get<tunet::payloads::status_response>("/rad_user_info.php", socket, ec);
+        if (ec || !status || !status->connected) {
+            return boost::optional<tunet::payloads::status_response>{};
+        }
+        return status;
     }
 }
