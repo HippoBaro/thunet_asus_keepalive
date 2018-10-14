@@ -37,7 +37,7 @@ user_settings::user_settings(boost::string_view json, boost::system::error_code 
 
 user_settings::user_settings() {}
 
-static constexpr bool is_dev = true;
+static constexpr bool is_dev = false;
 user_settings user_settings::make_from_fs(boost::system::error_code &err) {
     logger_("Locating setting file...", log_level::debug);
 
