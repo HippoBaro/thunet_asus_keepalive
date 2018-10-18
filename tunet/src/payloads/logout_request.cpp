@@ -32,10 +32,9 @@ tunet::payloads::logout_request::logout_request(boost::string_view username, boo
 }
 
 std::string tunet::payloads::logout_request::to_form_urlencoded() const {
-    auto ts = std::chrono::duration_cast< std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     auto urlencoded = boost::algorithm::join<std::initializer_list<std::string>>(
             {"callback=x", "&action=", urlencode(action), "&username=", urlencode(username),
              "&ac_id=", urlencode(_ac_id), "&ip=", urlencode(ip), "&double_stack=1",
-             "&info=", urlencode(_info), "&chksum=", urlencode(_chksum), "&n=", urlencode(_n), "&type=", urlencode(_type), "&_=", std::to_string(ts)}, "");
+             "&info=", urlencode(_info), "&chksum=", urlencode(_chksum), "&n=", urlencode(_n), "&type=", urlencode(_type)}, "");
     return urlencoded;
 }
