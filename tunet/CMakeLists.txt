@@ -33,7 +33,7 @@ add_library(tunet
         src/crypto/base64.hpp
         src/crypto/charset.cpp
         src/crypto/charset.hpp
-        src/keepalive.cpp
+        src/tunet.cpp
         include/error_code.hpp
         src/errr_code.cpp
         src/payloads/challenge_request.cpp
@@ -41,7 +41,13 @@ add_library(tunet
         src/payloads/login_response.cpp
         include/payloads/login_response.hpp
         src/json_object.cpp
-        include/json_object.hpp src/payloads/status_response.cpp include/payloads/status_response.hpp)
+        include/json_object.hpp
+        src/payloads/status_response.cpp
+        include/payloads/status_response.hpp
+        src/payloads/logout_request.cpp
+        include/payloads/logout_request.hpp
+        src/payloads/logout_response.cpp
+        include/payloads/logout_response.hpp)
 
 target_include_directories(tunet
         PUBLIC

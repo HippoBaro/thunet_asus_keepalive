@@ -6,7 +6,6 @@
 #define THUNET_ASUS_KEEPALIVE_LOGGER_HPP
 
 #include <ctime>
-#include <string>
 #include <boost/circular_buffer.hpp>
 #include <boost/utility/string_view.hpp>
 

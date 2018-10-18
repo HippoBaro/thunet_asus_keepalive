@@ -8,7 +8,19 @@ option(STRIP "Whether to strip the binary of unused symbols" ON)
 
 add_subdirectory(tunet)
 
-add_executable(thunet_asus_keepalive main.cpp src/periodic_task.cpp src/periodic_task.hpp src/periodic_scheduler.cpp src/periodic_scheduler.hpp src/keepalive_task.cpp src/keepalive_task.hpp src/user_settings.cpp src/user_settings.hpp src/logger.cpp src/logger.hpp)
+add_executable(thunet_asus_keepalive
+        main.cpp
+        src/periodic_task.cpp
+        src/periodic_task.hpp
+        src/periodic_scheduler.cpp
+        src/periodic_scheduler.hpp
+        src/keepalive_task.cpp
+        src/keepalive_task.hpp
+        src/user_settings.cpp
+        src/user_settings.hpp
+        src/logger.cpp
+        src/logger.hpp)
+
 target_include_directories(thunet_asus_keepalive PRIVATE src)
 
 target_link_libraries(thunet_asus_keepalive PRIVATE tunet)

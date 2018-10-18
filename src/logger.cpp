@@ -4,14 +4,14 @@
 
 #include "logger.hpp"
 
-boost::string_view level_to_string(log_level lv) {
+static boost::string_view level_to_string(log_level lv) {
     switch (lv) {
-        case log_level::debug: return "DEBUG";
-        case log_level::info: return "INFO";
-        case log_level::warning: return "WARNING";
-        case log_level::error: return "ERROR";
-        case log_level::critical: return "CRITICAL";
-        default: return "UNKNOWN";
+        case log_level::debug: return       "   DEBUG";
+        case log_level::info: return        "    INFO";
+        case log_level::warning: return     " WARNING";
+        case log_level::error: return       "   ERROR";
+        case log_level::critical: return    "CRITICAL";
+        default: return                     " UNKNOWN";
     }
 }
 
@@ -22,5 +22,8 @@ void logger::operator()(boost::string_view log, log_level level) {
         //store
     }
 
-    printf("%s [%s]: %s\n", std::to_string(_buf.back().first).data(), level_to_string(level).data(), log.data());
+    char mbstr[100];
+    if (std::strftime(mbstr, sizeof(mbstr), "%F %T", std::localtime(&_buf.back().first))) {
+        printf("%s [%s]: %s\n", mbstr, level_to_string(level).data(), log.data());
+    }
 }
