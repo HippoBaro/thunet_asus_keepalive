@@ -213,7 +213,11 @@ void signal_handler(int) {
     std::exit(EXIT_SUCCESS);
 }
 
-int main(int ac, char **) {
+int main(int ac, char **av) {
+    if (ac < 2) {
+        printf("Usage: %s [working directory]\n", av[0]);
+    }
+
     logger_ = std::make_unique<logger>();
 
     std::signal(SIGINT, signal_handler);
@@ -221,14 +225,16 @@ int main(int ac, char **) {
     boost::system::error_code ec;
     ioc = std::make_unique<boost::asio::io_context>(1);
 
-    settings = user_settings::make_from_fs(ec);
+    settings = user_settings::make_from_fs(av[1], ec);
     if (ec) {
         logger_->operator()(ec.message(), log_level::warning);
     }
 
     periodic_scheduler schd;
-    schd.addTask(*ioc, std::make_unique<keepalive_task>(*ioc, *settings));
 
+    if (!settings->accounts.empty()) {
+        schd.addTask(*ioc, std::make_unique<keepalive_task>(*ioc, *settings));
+    }
 
     auto const address = boost::asio::ip::make_address("0.0.0.0");
     unsigned short port = 62345;
@@ -236,6 +242,8 @@ int main(int ac, char **) {
     tcp::acceptor acceptor{*ioc, {address, port}, true};
     tcp::socket socket{*ioc};
     http_server(acceptor, socket);
+
+    logger_->operator()("HTTP server listening at 0.0.0.O:62345");
 
     ioc->run();
 

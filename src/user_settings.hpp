@@ -17,7 +17,7 @@ struct user_settings : public json_object {
 
     user_settings(boost::string_view source, boost::system::error_code &err);
 
-    static std::unique_ptr<user_settings> make_from_fs(boost::system::error_code &err);
+    static std::unique_ptr<user_settings> make_from_fs(boost::string_view directory, boost::system::error_code &err);
 };
 
 

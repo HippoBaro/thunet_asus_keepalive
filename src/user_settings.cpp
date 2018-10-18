@@ -5,10 +5,6 @@
 #include <boost/asio.hpp>
 #include <logger.hpp>
 #include <user_settings.hpp>
-#include <libgen.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "user_settings.hpp"
 #include <logger.hpp>
 
 
@@ -29,7 +25,8 @@ user_settings::user_settings(boost::string_view json, boost::system::error_code 
     if (arr) {
         for (auto node : *arr) {
             auto account = json_object(node->value);
-            accounts.emplace_back(*account.operator[]<boost::string_view>("username"), *account.operator[]<boost::string_view>("password"));
+            accounts.emplace_back(*account.operator[]<boost::string_view>("username"),
+                                  *account.operator[]<boost::string_view>("password"));
         }
         logger_->operator()("Successfully read " + std::to_string(accounts.size()) + " accounts");
     }
@@ -37,26 +34,16 @@ user_settings::user_settings(boost::string_view json, boost::system::error_code 
 
 user_settings::user_settings() {}
 
-std::unique_ptr<user_settings> user_settings::make_from_fs(boost::system::error_code &err) {
+std::unique_ptr<user_settings>
+user_settings::make_from_fs(boost::string_view directory, boost::system::error_code &err) {
     logger_->operator()("Locating setting file...", log_level::debug);
 
-    boost::string_view directory;
-#ifndef __DEV__
-        char path[4096];
-        ssize_t count = readlink("/proc/self/exe", path, 4096);
-        if (count == -1) {
-            err = boost::system::errc::make_error_code(boost::system::errc::no_such_file_or_directory);
-            return std::make_unique<user_settings>();
-        }
-        directory = dirname(path);
-#else
-        directory = "/Users/hbarraud";
-#endif
-
-    logger_->operator()("Reading setting file at " + (std::string(directory) + "/settings.json"), log_level::info);
+    logger_->operator()("Reading setting file at " + (std::string(directory) + "/tunet_settings.json"),
+                        log_level::info);
     FILE *f = fopen((std::string(directory) + "/settings.json").data(), "rb");
     if (!f) {
-        logger_->operator()((std::string(directory) + "/settings.json") + " does not exits. Creating empty setting.", log_level::info);
+        logger_->operator()((std::string(directory) + "/settings.json") + " does not exits. Creating empty setting.",
+                            log_level::info);
         return std::make_unique<user_settings>();
     }
     fseek(f, 0, SEEK_END);
