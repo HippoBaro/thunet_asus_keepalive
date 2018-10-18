@@ -18,15 +18,13 @@ enum class log_level : int {
 };
 
 struct logger {
-private:
-    boost::circular_buffer<std::pair<std::time_t, std::string>> _buf = boost::circular_buffer<std::pair<std::time_t, std::string>>(100);
-
-public:
-
+    boost::circular_buffer<std::tuple<log_level, std::time_t, std::string>> buf = boost::circular_buffer<std::tuple<log_level, std::time_t, std::string>>(100);
     void operator()(boost::string_view, log_level = log_level::info);
+
+    std::string format(std::tuple<log_level, std::time_t, std::string> const& log);
 };
 
-static logger logger_ = logger();
+extern std::unique_ptr<logger> logger_;
 
 
 #endif //THUNET_ASUS_KEEPALIVE_LOGGER_HPP

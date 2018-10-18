@@ -14,6 +14,6 @@ namespace boost {
 } // namespace boost
 
 void periodic_scheduler::addTask(boost::asio::io_context &, std::unique_ptr<periodic_task> task) {
-    logger_("Scheduling new periodic task " + task->name().to_string());
+    logger_->operator()("Scheduling new periodic task " + task->name().to_string());
     tasks.emplace_back(std::move(task));
 }

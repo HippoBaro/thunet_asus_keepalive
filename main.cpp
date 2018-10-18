@@ -61,7 +61,7 @@ private:
     boost::beast::flat_buffer buffer_{8192};
 
     // The request message.
-    http::request<http::string_body > request_;
+    http::request<http::string_body> request_;
 
     // The response message.
     http::response<http::string_body> response_;
@@ -117,14 +117,14 @@ private:
     create_response() {
         if (request_.target() == "/count") {
             response_.set(http::field::content_type, "text/html");
-            response_.body() =  "<html>\n"
-                                "<head><title>Request count</title></head>\n"
-                                "<body>\n"
-                                "<h1>Request count</h1>\n"
-                                "<p>There have been " + std::to_string(my_program_state::request_count()) +
-                                " requests so far.</p>\n"
-                                "</body>\n"
-                                "</html>\n";
+            response_.body() = "<html>\n"
+                               "<head><title>Request count</title></head>\n"
+                               "<body>\n"
+                               "<h1>Request count</h1>\n"
+                               "<p>There have been " + std::to_string(my_program_state::request_count()) +
+                               " requests so far.</p>\n"
+                               "</body>\n"
+                               "</html>\n";
         }
         else if (request_.target() == "/time") {
             response_.set(http::field::content_type, "text/html");
@@ -138,10 +138,24 @@ private:
                                "</body>\n"
                                "</html>\n";
         }
+        else if (request_.target() == "/log") {
+            response_.set(http::field::content_type, "text/html");
+            response_.body() = "<html>\n"
+                               "<head><title>Log</title></head>\n"
+                               "<body>\n"
+                               "<h1>Log</h1>\n"
+                               "<pre><code>";
+            for (const auto &buf : logger_->buf) {
+                response_.body() += logger_->format(buf) + "\n";
+            }
+            response_.body() += "</code></pre>\n"
+                                "</body>\n"
+                                "</html>\n";
+        }
         else {
             response_.result(http::status::not_found);
             response_.set(http::field::content_type, "text/plain");
-           response_.body() = "File not found\r\n";
+            response_.body() = "File not found\r\n";
         }
     }
 
@@ -192,7 +206,7 @@ std::unique_ptr<boost::asio::io_context> ioc = nullptr;
 std::unique_ptr<user_settings> settings = nullptr;
 
 void signal_handler(int) {
-    logger_("Received stop signal", log_level::warning);
+    logger_->operator()("Received stop signal", log_level::warning);
     if (ioc) {
         ioc->stop();
     }
@@ -200,6 +214,8 @@ void signal_handler(int) {
 }
 
 int main(int ac, char **) {
+    logger_ = std::make_unique<logger>();
+
     std::signal(SIGINT, signal_handler);
 
     boost::system::error_code ec;
@@ -207,7 +223,7 @@ int main(int ac, char **) {
 
     settings = user_settings::make_from_fs(ec);
     if (ec) {
-        logger_(ec.message(), log_level::warning);
+        logger_->operator()(ec.message(), log_level::warning);
     }
 
     periodic_scheduler schd;

@@ -4,6 +4,8 @@
 
 #include "logger.hpp"
 
+std::unique_ptr<logger> logger_ = nullptr;
+
 static boost::string_view level_to_string(log_level lv) {
     switch (lv) {
         case log_level::debug: return       "   DEBUG";
@@ -16,14 +18,19 @@ static boost::string_view level_to_string(log_level lv) {
 }
 
 void logger::operator()(boost::string_view log, log_level level) {
-    _buf.push_back(std::make_pair(std::time(nullptr), log.to_string()));
+    buf.push_back(std::make_tuple(level, std::time(nullptr), log.to_string()));
 
-    if (_buf.full() || level >= log_level::error) {
+    if (buf.full() || level >= log_level::error) {
         //store
     }
 
+    printf("%s\n", format(buf.back()).data());
+}
+
+std::string logger::format(std::tuple<log_level, std::time_t, std::string> const &log) {
     char mbstr[100];
-    if (std::strftime(mbstr, sizeof(mbstr), "%F %T", std::localtime(&_buf.back().first))) {
-        printf("%s [%s]: %s\n", mbstr, level_to_string(level).data(), log.data());
+    if (auto i = std::strftime(mbstr, sizeof(mbstr), "%F %T", std::localtime(&std::get<1>(log)))) {
+        return std::string(mbstr, i) + " [" + level_to_string(std::get<0>(log)).to_string() + "]: " + std::get<2>(log);
     }
+    return "";
 }
