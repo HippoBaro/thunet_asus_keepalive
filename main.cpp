@@ -18,6 +18,7 @@ namespace boost {
 #include <string>
 #include <periodic_scheduler.hpp>
 
+#include <csignal>
 #include <user_settings.hpp>
 #include <logger.hpp>
 #include <keepalive_task.hpp>
@@ -187,33 +188,40 @@ http_server(tcp::acceptor &acceptor, tcp::socket &socket) {
                           });
 }
 
-static std::unique_ptr<user_settings> settings = nullptr;
+std::unique_ptr<boost::asio::io_context> ioc = nullptr;
+std::unique_ptr<user_settings> settings = nullptr;
 
-int main(int ac, char **av) {
+void signal_handler(int) {
+    logger_("Received stop signal", log_level::warning);
+    if (ioc) {
+        ioc->stop();
+    }
+    std::exit(EXIT_SUCCESS);
+}
+
+int main(int ac, char **) {
+    std::signal(SIGINT, signal_handler);
+
     boost::system::error_code ec;
-    boost::asio::io_context ioc{1};
+    ioc = std::make_unique<boost::asio::io_context>(1);
 
-    user_settings s = user_settings::make_from_fs(ec);
-
+    settings = user_settings::make_from_fs(ec);
     if (ec) {
-        logger_(ec.message(), log_level::critical);
-        return EXIT_FAILURE;
+        logger_(ec.message(), log_level::warning);
     }
 
     periodic_scheduler schd;
+    schd.addTask(*ioc, std::make_unique<keepalive_task>(*ioc, *settings));
 
-    schd.addTask(ioc, std::make_unique<keepalive_task>(ioc, *settings));
-
-    //schd.addTask(ioc, "test", [] (auto &err) { printf("toto\n");}, std::chrono::seconds(100));
 
     auto const address = boost::asio::ip::make_address("0.0.0.0");
     unsigned short port = 62345;
 
-    tcp::acceptor acceptor{ioc, {address, port}, true};
-    tcp::socket socket{ioc};
+    tcp::acceptor acceptor{*ioc, {address, port}, true};
+    tcp::socket socket{*ioc};
     http_server(acceptor, socket);
 
-    ioc.run();
+    ioc->run();
 
     if (ac < 3) {
         return EXIT_FAILURE;
