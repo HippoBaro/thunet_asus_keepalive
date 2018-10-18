@@ -36,10 +36,6 @@ void periodic_task::start() {
     }
 }
 
-periodic_task::~periodic_task() {
-
-}
-
 void periodic_task::log(boost::string_view log, log_level level) {
-    logger_("[TASK: " + name().to_string() + "] " + log.to_string(), level);
+    logger_("[" + name().to_string() + "] " + log.to_string(), level);
 }

@@ -20,7 +20,7 @@ protected:
     void log(boost::string_view, log_level = log_level::info);
 
 public:
-    virtual ~periodic_task();
+    virtual ~periodic_task() = default;
 
     virtual int task(boost::asio::io_context &ctx) = 0;
     virtual boost::string_view name() = 0;
@@ -29,8 +29,6 @@ private:
     void execute(boost::system::error_code const &e);
 
     void start();
-
-    void start_wait();
 
     boost::asio::io_context &io_context;
     boost::asio::deadline_timer timer;

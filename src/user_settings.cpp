@@ -37,7 +37,9 @@ user_settings::user_settings(boost::string_view json, boost::system::error_code 
 
 user_settings::user_settings() {}
 
-user_settings user_settings::make_from_fs(boost::system::error_code &err) {
+#define __DEV__
+
+std::unique_ptr<user_settings> user_settings::make_from_fs(boost::system::error_code &err) {
     logger_("Locating setting file...", log_level::debug);
 
     boost::string_view directory;
@@ -57,7 +59,7 @@ user_settings user_settings::make_from_fs(boost::system::error_code &err) {
     FILE *f = fopen((std::string(directory) + "/settings.json").data(), "rb");
     if (!f) {
         logger_((std::string(directory) + "/settings.json") + " does not exits. Creating empty setting.", log_level::info);
-        return user_settings();
+        return std::make_unique<user_settings>();
     }
     fseek(f, 0, SEEK_END);
     auto fsize = static_cast<size_t>(ftell(f));
@@ -67,5 +69,5 @@ user_settings user_settings::make_from_fs(boost::system::error_code &err) {
     fread(const_cast<char *>(content.data()), fsize, 1, f); //work around GCC 6 bug
     fclose(f);
 
-    return user_settings(content, err);
+    return std::make_unique<user_settings>(content, err);
 }
