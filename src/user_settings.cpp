@@ -40,10 +40,11 @@ user_settings::make_from_fs(boost::string_view directory, boost::system::error_c
 
     logger_->operator()("Reading setting file at " + (std::string(directory) + "/tunet_settings.json"),
                         log_level::info);
-    FILE *f = fopen((std::string(directory) + "/settings.json").data(), "rb");
+    FILE *f = fopen((std::string(directory) + "/tunet_settings.json").data(), "rb");
     if (!f) {
-        logger_->operator()((std::string(directory) + "/settings.json") + " does not exits. Creating empty setting.",
-                            log_level::info);
+        logger_->operator()(
+                (std::string(directory) + "/tunet_settings.json") + " does not exits. Creating empty setting.",
+                log_level::info);
         return std::make_unique<user_settings>();
     }
     fseek(f, 0, SEEK_END);

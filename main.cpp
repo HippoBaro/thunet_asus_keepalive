@@ -216,6 +216,7 @@ void signal_handler(int) {
 int main(int ac, char **av) {
     if (ac < 2) {
         printf("Usage: %s [working directory]\n", av[0]);
+        return EXIT_FAILURE;
     }
 
     logger_ = std::make_unique<logger>();
