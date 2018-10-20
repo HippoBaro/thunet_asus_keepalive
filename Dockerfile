@@ -56,7 +56,7 @@ RUN apk --update add --virtual build-dependencies \
         -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Os -s \
         -fdata-sections -ffunction-sections -Wl,--gc-sections -fno-stack-protector -fomit-frame-pointer \
         -fno-math-errno -fno-unroll-loops -fmerge-all-constants -fno-ident -fsingle-precision-constant -ffast-math \
-        -Wl,-z,norelro -Wl,--hash-style=gnu" -G"Ninja" .. && \
+        -Wl,-z,norelro" -G"Ninja" .. && \
         ninja install \
 && \
         cd / && rm -rf /src &&\
