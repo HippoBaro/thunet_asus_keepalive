@@ -207,7 +207,7 @@ std::unique_ptr<user_settings> settings = nullptr;
 
 void signal_handler(int) {
     logger_->operator()("Received stop signal", log_level::warning);
-    if (ioc) {
+    if (ioc && !ioc->stopped()) {
         ioc->stop();
     }
     std::exit(EXIT_SUCCESS);

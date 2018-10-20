@@ -6,6 +6,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/socket_base.hpp>
 #include <boost/asio/connect.hpp>
+#include <boost/asio/ssl/stream.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/http.hpp>
 #include <payloads/challenge_request.hpp>
@@ -23,7 +24,7 @@ namespace boost {
 constexpr auto thu_network_host = "auth4.tsinghua.edu.cn";
 
 static boost::optional<boost::beast::http::response<boost::beast::http::string_body>>
-fetch(boost::beast::http::request<boost::beast::http::string_body> req, boost::asio::ip::tcp::socket &socket,
+fetch(boost::beast::http::request<boost::beast::http::string_body> req, boost::asio::ssl::stream<boost::asio::ip::tcp::socket> &socket,
       boost::system::error_code &ec) {
     boost::beast::http::request_serializer<boost::beast::http::string_body> s{req};
     boost::beast::http::write(socket, s, ec);
@@ -43,7 +44,7 @@ fetch(boost::beast::http::request<boost::beast::http::string_body> req, boost::a
 
 template<typename Response>
 static boost::optional<Response>
-fetch(boost::beast::http::request<boost::beast::http::string_body> req, boost::asio::ip::tcp::socket &socket,
+fetch(boost::beast::http::request<boost::beast::http::string_body> req, boost::asio::ssl::stream<boost::asio::ip::tcp::socket> &socket,
       boost::system::error_code &ec) {
     auto res = fetch(req, socket, ec);
     if (ec || !res) {
@@ -59,7 +60,7 @@ fetch(boost::beast::http::request<boost::beast::http::string_body> req, boost::a
 
 template<typename Request, typename Response>
 static auto
-post(boost::string_view target, boost::asio::ip::tcp::socket &socket, Request const &request,
+post(boost::string_view target, boost::asio::ssl::stream<boost::asio::ip::tcp::socket> &socket, Request const &request,
      boost::system::error_code &ec) {
     boost::beast::http::request<boost::beast::http::string_body> req{boost::beast::http::verb::post, target, 11};
     req.set(boost::beast::http::field::host, thu_network_host);
@@ -72,7 +73,7 @@ post(boost::string_view target, boost::asio::ip::tcp::socket &socket, Request co
 
 template<typename Response>
 static auto
-get(boost::string_view target, boost::asio::ip::tcp::socket &socket, boost::system::error_code &ec) {
+get(boost::string_view target, boost::asio::ssl::stream<boost::asio::ip::tcp::socket> &socket, boost::system::error_code &ec) {
     boost::beast::http::request<boost::beast::http::string_body> req{boost::beast::http::verb::get, target, 11};
     req.set(boost::beast::http::field::host, thu_network_host);
     req.set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
@@ -82,7 +83,7 @@ get(boost::string_view target, boost::asio::ip::tcp::socket &socket, boost::syst
 }
 
 static auto
-get(boost::string_view target, boost::asio::ip::tcp::socket &socket, boost::system::error_code &ec) {
+get(boost::string_view target, boost::asio::ssl::stream<boost::asio::ip::tcp::socket> &socket, boost::system::error_code &ec) {
     boost::beast::http::request<boost::beast::http::string_body> req{boost::beast::http::verb::get, target, 11};
     req.set(boost::beast::http::field::host, thu_network_host);
     req.set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
@@ -95,23 +96,38 @@ namespace tunet {
     boost::optional<tunet::payloads::login_response>
     login(boost::asio::io_context &ioc, boost::string_view username, boost::string_view password,
           boost::system::error_code &ec) noexcept {
+        boost::asio::ssl::context ctx{boost::asio::ssl::context::tls_client};
+
+        // This holds the root certificate used for verification
+        //boost::beast::http::load_root_certificates(ctx);
+
         boost::asio::ip::tcp::resolver resolver{ioc};
-        auto const hosts = resolver.resolve(thu_network_host, "http", ec);
+        auto const hosts = resolver.resolve(thu_network_host, "https", ec);
         if (ec) {
-            return boost::optional<tunet::payloads::login_response>{};
+            return {};
         }
 
-        boost::asio::ip::tcp::socket socket{ioc};
-        boost::asio::connect(socket, hosts.begin(), hosts.end(), ec);
+        boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket{ioc, ctx};
+
+        // Set SNI Hostname (many hosts need this to handshake successfully)
+        //f(! SSL_set_tlsext_host_name(stream.native_handle(), thu_network_host))
+        //{
+        //    ec = boost::beast::errc::make_error_code(boost::beast::errc::protocol_error);
+        //}
+
+        boost::asio::connect(socket.next_layer(), hosts.begin(), hosts.end(), ec);
         if (ec) {
-            return boost::optional<tunet::payloads::login_response>{};
+            return {};
         }
+
+        // Perform the SSL handshake
+        socket.handshake(boost::asio::ssl::stream_base::client);
 
         tunet::payloads::challenge_request challenge_req(username, "");
         auto token = post<payloads::challenge_request, payloads::challenge_response>("/cgi-bin/get_challenge",
                                                                                      socket, challenge_req, ec);
         if (ec || !token) {
-            return boost::optional<tunet::payloads::login_response>{};
+            return {};
         }
 
         tunet::payloads::login_request request(username, password, "",
@@ -121,22 +137,37 @@ namespace tunet {
         if (response) {
             return response;
         }
-        return boost::optional<tunet::payloads::login_response>{};
+        return {};
     }
 
     boost::optional<tunet::payloads::logout_response>
     logout(boost::asio::io_context &ioc, boost::string_view username, boost::system::error_code &ec) noexcept {
+        boost::asio::ssl::context ctx{boost::asio::ssl::context::tls_client};
+
+        // This holds the root certificate used for verification
+        //boost::beast::http::load_root_certificates(ctx);
+
         boost::asio::ip::tcp::resolver resolver{ioc};
-        auto const hosts = resolver.resolve(thu_network_host, "http", ec);
+        auto const hosts = resolver.resolve(thu_network_host, "https", ec);
         if (ec) {
             return {};
         }
 
-        boost::asio::ip::tcp::socket socket{ioc};
-        boost::asio::connect(socket, hosts.begin(), hosts.end(), ec);
+        boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket{ioc, ctx};
+
+        // Set SNI Hostname (many hosts need this to handshake successfully)
+        //f(! SSL_set_tlsext_host_name(stream.native_handle(), thu_network_host))
+        //{
+        //    ec = boost::beast::errc::make_error_code(boost::beast::errc::protocol_error);
+        //}
+
+        boost::asio::connect(socket.next_layer(), hosts.begin(), hosts.end(), ec);
         if (ec) {
             return {};
         }
+
+        // Perform the SSL handshake
+        socket.handshake(boost::asio::ssl::stream_base::client);
 
         tunet::payloads::challenge_request challenge_req(username, "");
         auto token = post<payloads::challenge_request, payloads::challenge_response>("/cgi-bin/get_challenge",
@@ -156,17 +187,32 @@ namespace tunet {
 
     boost::optional<std::string>
     whoami(boost::asio::io_context &ioc, boost::system::error_code &ec) noexcept {
+        boost::asio::ssl::context ctx{boost::asio::ssl::context::tls_client};
+
+        // This holds the root certificate used for verification
+        //boost::beast::http::load_root_certificates(ctx);
+
         boost::asio::ip::tcp::resolver resolver{ioc};
-        auto const hosts = resolver.resolve(thu_network_host, "http", ec);
+        auto const hosts = resolver.resolve(thu_network_host, "https", ec);
         if (ec) {
             return {};
         }
 
-        boost::asio::ip::tcp::socket socket{ioc};
-        boost::asio::connect(socket, hosts.begin(), hosts.end(), ec);
+        boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket{ioc, ctx};
+
+        // Set SNI Hostname (many hosts need this to handshake successfully)
+        //f(! SSL_set_tlsext_host_name(stream.native_handle(), thu_network_host))
+        //{
+        //    ec = boost::beast::errc::make_error_code(boost::beast::errc::protocol_error);
+        //}
+
+        boost::asio::connect(socket.next_layer(), hosts.begin(), hosts.end(), ec);
         if (ec) {
             return {};
         }
+
+        // Perform the SSL handshake
+        socket.handshake(boost::asio::ssl::stream_base::client);
 
         auto res = get("/srun_portal_pc.php?ac_id=1", socket, ec);
         if (ec || !res) {
@@ -189,21 +235,36 @@ namespace tunet {
 
     boost::optional<tunet::payloads::status_response>
     status(boost::asio::io_context &ioc, boost::system::error_code &ec) noexcept {
+        boost::asio::ssl::context ctx{boost::asio::ssl::context::tls_client};
+
+        // This holds the root certificate used for verification
+        //boost::beast::http::load_root_certificates(ctx);
+
         boost::asio::ip::tcp::resolver resolver{ioc};
-        auto const hosts = resolver.resolve(thu_network_host, "http", ec);
+        auto const hosts = resolver.resolve(thu_network_host, "https", ec);
         if (ec) {
-            return boost::optional<tunet::payloads::status_response>{};
+            return {};
         }
 
-        boost::asio::ip::tcp::socket socket{ioc};
-        boost::asio::connect(socket, hosts.begin(), hosts.end(), ec);
+        boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket{ioc, ctx};
+
+        // Set SNI Hostname (many hosts need this to handshake successfully)
+        //f(! SSL_set_tlsext_host_name(stream.native_handle(), thu_network_host))
+        //{
+        //    ec = boost::beast::errc::make_error_code(boost::beast::errc::protocol_error);
+        //}
+
+        boost::asio::connect(socket.next_layer(), hosts.begin(), hosts.end(), ec);
         if (ec) {
-            return boost::optional<tunet::payloads::status_response>{};
+            return {};
         }
+
+        // Perform the SSL handshake
+        socket.handshake(boost::asio::ssl::stream_base::client);
 
         auto status = get<tunet::payloads::status_response>("/rad_user_info.php", socket, ec);
         if (ec || !status || !status->connected) {
-            return boost::optional<tunet::payloads::status_response>{};
+            return {};
         }
         return status;
     }

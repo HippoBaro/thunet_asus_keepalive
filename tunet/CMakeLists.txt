@@ -8,7 +8,9 @@ option(STATIC_BIN "Compile to static binary" ON)
 set(Boost_USE_STATIC_LIBS STATIC_BIN)
 set(Boost_USE_STATIC_RUNTIME STATIC_BIN)
 find_package(Boost 1.67 COMPONENTS system REQUIRED)
-find_package(Threads)
+
+set(OPENSSL_USE_STATIC_LIBS TRUE)
+find_package(LibreSSL REQUIRED)
 
 if (STATIC_BIN)
     SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
@@ -80,7 +82,8 @@ target_compile_options(tunet PRIVATE
 
 target_compile_definitions(tunet PUBLIC BOOST_NO_RTTI BOOST_NO_TYPEID BOOST_EXCEPTION_DISABLE BOOST_NO_EXCEPTIONS)
 
-target_link_libraries(tunet PUBLIC Boost::system)
+target_link_libraries(tunet PUBLIC Boost::system ${LibreSSL_LIBRARIES})
+target_include_directories(tunet PRIVATE ${LibreSSL_INCLUDE_DIR})
 
 if(STATIC_BIN)
     target_compile_options(tunet PRIVATE -Wl,--gc-sections)

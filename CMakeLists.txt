@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.11)
 project(thunet_asus_keepalive CXX)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
 set(CMAKE_CXX_STANDARD 17)
 
 option(STATIC_BIN "Compile to static binary" ON)
 option(STRIP "Whether to strip the binary of unused symbols" ON)
 
+find_package(Boost 1.67 COMPONENTS system REQUIRED)
 add_subdirectory(tunet)
 
 add_executable(thunet_asus_keepalive
@@ -23,7 +26,7 @@ add_executable(thunet_asus_keepalive
 
 target_include_directories(thunet_asus_keepalive PRIVATE src)
 
-target_link_libraries(thunet_asus_keepalive PRIVATE tunet)
+target_link_libraries(thunet_asus_keepalive PRIVATE tunet Boost::system)
 if(STATIC_BIN)
     SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
     list(REMOVE_ITEM CMAKE_CXX_IMPLICIT_LINK_LIBRARIES stdc++)
