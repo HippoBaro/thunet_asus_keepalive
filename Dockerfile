@@ -52,7 +52,7 @@ RUN apk --update add --virtual build-dependencies \
         ./autogen.sh && \
         mkdir build-ninja && \
         cd build-ninja && \
-        CC=$MIPSCC CXX=$MIPSCXX cmake -G"Ninja" .. && \
+        cmake -DCMAKE_C_COMPILER=$MIPSCC -DLIBRESSL_APPS=OFF -DLIBRESSL_TESTS=OFF -DENABLE_ASM=OFF -G"Ninja" .. && \
         ninja install \
 && \
         cd / && rm -rf /src &&\
