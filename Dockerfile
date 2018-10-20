@@ -39,6 +39,18 @@ RUN apk --update add --virtual build-dependencies \
         apk del build-dependencies && \
         rm -rf /var/cache/apk/*
 
+RUN apk --update add wget automake autoconf git libtool perl \
+&& \
+        mkdir src && \
+        cd src && \
+        git clone https://github.com/libressl-portable/portable.git && \
+        cd portable && \
+        ./autogen.sh && \
+        mkdir build-ninja && \
+        cd build-ninja && \
+        cmake -G"Ninja" .. && \
+        ninja install
+
 ENV BOOST_ROOT /boost
 ENV CXX=/musl-cross-make/output/bin/mipsel-linux-muslsf-g++
 ENV CC=/musl-cross-make/output/bin/mipsel-linux-muslsf-gcc
