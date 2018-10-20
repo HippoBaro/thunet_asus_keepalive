@@ -38,13 +38,26 @@ RUN apk --update add --virtual build-dependencies \
         tar --bzip2 -xf boost_1_67_0.tar.bz2 && \
         cd boost_1_67_0 && \
         ./bootstrap.sh && \
-        echo "using gcc : : $MIPSCXX"  >> tools/build/src/user-config.jam && \
+        echo "using gcc : : $MIPSCXX ;"  >> tools/build/src/user-config.jam && \
         ./b2 link=static runtime-link=static variant=release optimization=space --with-system --prefix=/boost install \
+&& \
+        cd /src && \
+        wget http://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.4.10.tar.gz && \
+        tar zxvf linux-4.4.10.tar.gz && \
+        cp -r linux-4.4.10/include/linux /usr/include/linux \
+&& \
+        cd /src && \
+        git clone https://github.com/libressl-portable/portable.git && \
+        cd portable && \
+        ./autogen.sh && \
+        mkdir build-ninja && \
+        cd build-ninja && \
+        CC=$MIPSCC CXX=$MIPSCXX cmake -G"Ninja" .. && \
+        ninja install \
 && \
         cd / && rm -rf /src &&\
         apk del build-dependencies && \
         rm -rf /var/cache/apk/*
-
 
 ENV BOOST_ROOT /boost
 ENV CXX=/musl-cross-make/output/bin/mipsel-linux-muslsf-g++
