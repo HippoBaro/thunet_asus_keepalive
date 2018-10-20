@@ -21,7 +21,7 @@ RUN apk --update add --virtual build-dependencies \
         autoconf \
         git \
         libtool \
-        perl
+        perl \
 && \
         apk add cmake ninja upx \
 && \
