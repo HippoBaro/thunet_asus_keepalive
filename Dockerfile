@@ -41,14 +41,6 @@ RUN apk --update add --virtual build-dependencies \
         echo "using gcc : : $MIPSCXX"  >> tools/build/src/user-config.jam && \
         ./b2 link=static runtime-link=static variant=release optimization=space --with-system --prefix=/boost install \
 && \
-        git clone https://github.com/libressl-portable/portable.git && \
-        cd portable && \
-        ./autogen.sh && \
-        mkdir build-ninja && \
-        cd build-ninja && \
-        cmake -G"Ninja" .. && \
-        ninja install \
-&& \
         cd / && rm -rf /src &&\
         apk del build-dependencies && \
         rm -rf /var/cache/apk/*
