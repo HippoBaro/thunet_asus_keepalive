@@ -17,6 +17,11 @@ RUN apk --update add --virtual build-dependencies \
         alpine-sdk \
         xz \
         wget \
+        automake \
+        autoconf \
+        git \
+        libtool \
+        perl
 && \
         apk add cmake ninja upx \
 && \
@@ -26,30 +31,28 @@ RUN apk --update add --virtual build-dependencies \
         cd .. && \
         find ./musl-cross-make -mindepth 1 -name output -prune -o -exec rm -rf {} \; ; echo done \
 && \
-        mkdir src && \
-        cd src && \
+        mkdir /src && \
+        cd /src \
+&& \
         wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2 -q && \
         tar --bzip2 -xf boost_1_67_0.tar.bz2 && \
         cd boost_1_67_0 && \
         ./bootstrap.sh && \
-        echo "using gcc : : $MIPSCXX  >> tools/build/src/user-config.jam && \
-        ./b2 link=static runtime-link=static variant=release optimization=space --with-system --prefix=/boost install && \
-        cd / && rm -rf /src \
+        echo "using gcc : : $MIPSCXX"  >> tools/build/src/user-config.jam && \
+        ./b2 link=static runtime-link=static variant=release optimization=space --with-system --prefix=/boost install \
 && \
-        apk del build-dependencies && \
-        rm -rf /var/cache/apk/*
-
-RUN apk --update add wget automake autoconf git libtool perl \
-&& \
-        mkdir src && \
-        cd src && \
         git clone https://github.com/libressl-portable/portable.git && \
         cd portable && \
         ./autogen.sh && \
         mkdir build-ninja && \
         cd build-ninja && \
         cmake -G"Ninja" .. && \
-        ninja install
+        ninja install \
+&& \
+        cd / && rm -rf /src &&\
+        apk del build-dependencies && \
+        rm -rf /var/cache/apk/*
+
 
 ENV BOOST_ROOT /boost
 ENV CXX=/musl-cross-make/output/bin/mipsel-linux-muslsf-g++
