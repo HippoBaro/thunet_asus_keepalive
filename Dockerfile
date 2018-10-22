@@ -41,38 +41,6 @@ RUN apk --update add --virtual build-dependencies \
         echo "using gcc : : $MIPSCXX ;"  >> tools/build/src/user-config.jam && \
         ./b2 link=static runtime-link=static variant=release optimization=space --with-system --prefix=/boost install \
 && \
-        cd /src && \
-        wget http://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.4.10.tar.gz && \
-        tar zxvf linux-4.4.10.tar.gz && \
-        cp -r linux-4.4.10/include/linux /usr/include/linux \
-&& \
-        cd /src && \
-        wget -q "https://github.com/wolfSSL/wolfssl/archive/v3.15.3-stable.zip" && \
-        unzip v3.15.3-stable.zip && \
-        cd wolfssl-3.15.3-stable/ && \
-        ./autogen.sh && \
-        ./configure \
-            --enable-singlethreaded=yes \
-            --enable-opensslall \
-            --enable-opensslextra=yes \
-            --enable-oldtls=no \
-            --enable-harden=no \
-            --enable-errorstrings=no \
-            --enable-oldtls=no \
-            --enable-memory=no \
-            --enable-dh=no \
-            --enable-des3=no \
-            --enable-poly1305=no \
-            --enable-chacha=no \
-            --enable-hashdrbg=no \
-            --enable-filesystem=no \
-            --enable-inline=no \
-            --enable-extended-master=no \
-            --enable-examples=no \
-            --enable-crypttests=no \
-            --host=mipsel-linux-gnu && \
-        make install \
-&& \
         cd / && rm -rf /src &&\
         apk del build-dependencies && \
         rm -rf /var/cache/apk/*
