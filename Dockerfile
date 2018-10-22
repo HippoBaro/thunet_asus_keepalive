@@ -47,17 +47,31 @@ RUN apk --update add --virtual build-dependencies \
         cp -r linux-4.4.10/include/linux /usr/include/linux \
 && \
         cd /src && \
-        git clone https://github.com/libressl-portable/portable.git && \
-        cd portable && \
+        wget -q "https://github.com/wolfSSL/wolfssl/archive/v3.15.3-stable.zip" && \
+        unzip v3.15.3-stable.zip && \
+        cd wolfssl-3.15.3-stable/ && \
         ./autogen.sh && \
-        mkdir build-ninja && \
-        cd build-ninja && \
-        cmake -DCMAKE_C_COMPILER=$MIPSCC -DLIBRESSL_APPS=OFF -DLIBRESSL_TESTS=OFF -DENABLE_ASM=OFF \
-        -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Os -s \
-        -fdata-sections -ffunction-sections -Wl,--gc-sections -fno-stack-protector -fomit-frame-pointer \
-        -fno-math-errno -fno-unroll-loops -fmerge-all-constants -fno-ident -fsingle-precision-constant -ffast-math \
-        -Wl,-z,norelro" -G"Ninja" .. && \
-        ninja install \
+        ./configure \
+            --enable-singlethreaded=yes \
+            --enable-opensslall \
+            --enable-opensslextra=yes \
+            --enable-oldtls=no \
+            --enable-harden=no \
+            --enable-errorstrings=no \
+            --enable-oldtls=no \
+            --enable-memory=no \
+            --enable-dh=no \
+            --enable-des3=no \
+            --enable-poly1305=no \
+            --enable-chacha=no \
+            --enable-hashdrbg=no \
+            --enable-filesystem=no \
+            --enable-inline=no \
+            --enable-extended-master=no \
+            --enable-examples=no \
+            --enable-crypttests=no \
+            --host=mipsel-linux-gnu && \
+        make install \
 && \
         cd / && rm -rf /src &&\
         apk del build-dependencies && \
