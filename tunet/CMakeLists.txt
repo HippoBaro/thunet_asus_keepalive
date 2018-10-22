@@ -9,9 +9,8 @@ set(Boost_USE_STATIC_LIBS STATIC_BIN)
 set(Boost_USE_STATIC_RUNTIME STATIC_BIN)
 find_package(Boost 1.67 COMPONENTS system REQUIRED)
 
-set(WOLFSSL_PREFER_STATIC_LIB TRUE)
-set(OPENSSL_USE_STATIC_LIBS TRUE)
-find_package(WolfSSL REQUIRED)
+set(OPENSSL_USE_STATIC_LIBS FALSE)
+find_package(OpenSSL REQUIRED)
 
 if (STATIC_BIN)
     SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
@@ -83,10 +82,7 @@ target_compile_options(tunet PRIVATE
 
 target_compile_definitions(tunet PUBLIC BOOST_NO_RTTI BOOST_NO_TYPEID BOOST_EXCEPTION_DISABLE BOOST_NO_EXCEPTIONS)
 
-target_link_libraries(tunet PUBLIC Boost::system ${WOLFSSL_LIBRARY})
-target_include_directories(tunet PRIVATE ${WOLFSSL_INCLUDE_DIR}/wolfssl)
-
-message( ${WOLFSSL_INCLUDE_DIR} )
+target_link_libraries(tunet PUBLIC Boost::system OpenSSL::SSL)
 
 if(STATIC_BIN)
     target_compile_options(tunet PRIVATE -Wl,--gc-sections)
