@@ -45,7 +45,7 @@ RUN apk --update add --virtual build-dependencies \
         wget -q "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
         unzip OpenSSL_1_0_2p.zip && \
         cd openssl-OpenSSL_1_0_2p && \
-        ./Configure linux-elf no-asm && make install \
+        ./Configure linux-elf no-asm shared && make install \
 && \
         cd / && rm -rf /src &&\
         apk del build-dependencies && \
