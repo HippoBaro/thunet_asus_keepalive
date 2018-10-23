@@ -83,7 +83,7 @@ target_compile_options(tunet PRIVATE
 target_compile_definitions(tunet PUBLIC BOOST_NO_RTTI BOOST_NO_TYPEID BOOST_EXCEPTION_DISABLE BOOST_NO_EXCEPTIONS)
 
 target_link_libraries(tunet PUBLIC Boost::system OpenSSL::SSL)
-
+target_include_directories(tunet PUBLIC ${OPENSSL_INCLUDE_DIR})
 if(STATIC_BIN)
     target_compile_options(tunet PRIVATE -Wl,--gc-sections)
     target_link_libraries(tunet PRIVATE -static)

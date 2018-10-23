@@ -41,6 +41,12 @@ RUN apk --update add --virtual build-dependencies \
         echo "using gcc : : $MIPSCXX ;"  >> tools/build/src/user-config.jam && \
         ./b2 link=static runtime-link=static variant=release optimization=space --with-system --prefix=/boost install \
 && \
+        cd /src && \
+        wget -q "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
+        unzip OpenSSL_1_0_2p.zip && \
+        cd openssl-OpenSSL_1_0_2p && \
+        ./Configure linux-elf no-asm && make install \
+&& \
         cd / && rm -rf /src &&\
         apk del build-dependencies && \
         rm -rf /var/cache/apk/*
