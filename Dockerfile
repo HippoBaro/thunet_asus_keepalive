@@ -45,7 +45,7 @@ RUN apk --update add --virtual build-dependencies \
         wget -q "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
         unzip OpenSSL_1_0_2p.zip && \
         cd openssl-OpenSSL_1_0_2p && \
-        ./Configure linux-elf no-asm shared && make install \
+        ./Configure linux-mips32 no-asm shared -DL_ENDIAN && make install \
 && \
         cd / && rm -rf /src &&\
         apk del build-dependencies && \
