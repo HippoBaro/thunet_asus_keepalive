@@ -27,7 +27,7 @@ RUN apk --update add --virtual build-dependencies \
 && \
         git clone https://github.com/richfelker/musl-cross-make.git && \
         cd musl-cross-make && \
-        make install && \
+        make install -j$(nproc) && \
         cd .. && \
         find ./musl-cross-make -mindepth 1 -name output -prune -o -exec rm -rf {} \; ; echo done \
 && \
@@ -45,7 +45,7 @@ RUN apk --update add --virtual build-dependencies \
         wget -q "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
         unzip OpenSSL_1_0_2p.zip && \
         cd openssl-OpenSSL_1_0_2p && \
-        ./Configure linux-mipsel no-asm shared -DL_ENDIAN && make install \
+        ./Configure linux-mips32 no-asm shared no-rc4 no-ssl2 no-ssl3 && make install -j$(nproc) \
 && \
         cd / && rm -rf /src &&\
         apk del build-dependencies && \
