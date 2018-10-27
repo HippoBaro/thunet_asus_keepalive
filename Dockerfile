@@ -45,7 +45,8 @@ RUN apk --update add --virtual build-dependencies \
         wget -q "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
         unzip OpenSSL_1_0_2p.zip && \
         cd openssl-OpenSSL_1_0_2p && \
-        ./Configure linux-mips32 no-asm shared no-rc4 no-ssl2 no-ssl3 && make install -j$(nproc) \
+        ./Configure linux-mips32 no-asm shared no-rc4 no-ssl2 no-ssl3 && \
+        CC=/musl-cross-make/output/bin/mipsel-linux-muslsf-gcc CXX=/musl-cross-make/output/bin/mipsel-linux-muslsf-g++ make install -j$(nproc) \
 && \
         cd / && rm -rf /src &&\
         apk del build-dependencies && \
