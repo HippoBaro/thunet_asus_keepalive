@@ -46,8 +46,8 @@ RUN apk --update add --virtual build-dependencies \
         unzip OpenSSL_1_0_2p.zip && \
         cd openssl-OpenSSL_1_0_2p && \
         PATH=/musl-cross-make/output/bin:$PATH ./Configure linux-mips32 no-asm no-rc4 no-ssl2 no-ssl3 shared --cross-compile-prefix='mipsel-linux-muslsf-' && \
-        make CC=/musl-cross-make/output/bin/mipsel-linux-muslsf-gcc && \
-        make install \
+        PATH=/musl-cross-make/output/bin:$PATH make CC=/musl-cross-make/output/bin/mipsel-linux-muslsf-gcc && \
+        PATH=/musl-cross-make/output/bin:$PATH make install \
 && \
         cd / && rm -rf /src && \
         apk del build-dependencies && \
