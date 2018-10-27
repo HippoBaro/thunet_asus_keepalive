@@ -47,7 +47,8 @@ RUN apk --update add --virtual build-dependencies \
         cd openssl-OpenSSL_1_0_2p && \
         ./Configure linux-mips32 no-asm shared && \
         echo "OPENSSL CONFIGURED" && \
-        CC=/musl-cross-make/output/bin/mipsel-linux-muslsf-gcc CXX=/musl-cross-make/output/bin/mipsel-linux-muslsf-g++ make install \
+        make CC=/musl-cross-make/output/bin/mipsel-linux-muslsf-gcc && \
+        make install \
 && \
         cd / && rm -rf /src && \
         apk del build-dependencies && \
