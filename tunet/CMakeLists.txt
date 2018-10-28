@@ -81,8 +81,8 @@ target_link_libraries(tunet PUBLIC OpenSSL::SSL)
 
 if (STATIC_BIN)
     SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
-    set_target_properties(icarus PROPERTIES LINK_SEARCH_START_STATIC 1)
-    set_target_properties(icarus PROPERTIES LINK_SEARCH_END_STATIC 1)
+    set_target_properties(tunet PROPERTIES LINK_SEARCH_START_STATIC 1)
+    set_target_properties(tunet PROPERTIES LINK_SEARCH_END_STATIC 1)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 endif (STATIC_BIN)
 
