@@ -28,9 +28,7 @@ target_include_directories(thunet_asus_keepalive PRIVATE src)
 
 target_link_libraries(thunet_asus_keepalive PRIVATE tunet Boost::system)
 if(STATIC_BIN)
-    SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
-    list(REMOVE_ITEM CMAKE_CXX_IMPLICIT_LINK_LIBRARIES stdc++)
-    target_link_libraries(thunet_asus_keepalive PRIVATE -static-libgcc -static-libstdc++)
+    SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
 endif(STATIC_BIN)
 
 target_compile_options(thunet_asus_keepalive PRIVATE

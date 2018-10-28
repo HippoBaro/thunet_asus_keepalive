@@ -12,11 +12,6 @@ find_package(Boost 1.67 COMPONENTS system REQUIRED)
 set(OPENSSL_USE_STATIC_LIBS FALSE)
 find_package(OpenSSL REQUIRED)
 
-if (STATIC_BIN)
-    SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
-    list(REMOVE_ITEM CMAKE_CXX_IMPLICIT_LINK_LIBRARIES stdc++)
-endif (STATIC_BIN)
-
 add_library(tunet
         include/tunet.hpp
         src/json/gason.cpp
@@ -82,12 +77,17 @@ target_compile_options(tunet PRIVATE
 
 target_compile_definitions(tunet PUBLIC BOOST_NO_RTTI BOOST_NO_TYPEID BOOST_EXCEPTION_DISABLE BOOST_NO_EXCEPTIONS)
 
-target_link_libraries(tunet PUBLIC Boost::system OpenSSL::SSL)
+target_link_libraries(tunet PUBLIC OpenSSL::SSL)
+
+if (STATIC_BIN)
+    SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
+    set_target_properties(icarus PROPERTIES LINK_SEARCH_START_STATIC 1)
+    set_target_properties(icarus PROPERTIES LINK_SEARCH_END_STATIC 1)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+endif (STATIC_BIN)
+
+target_link_libraries(tunet PUBLIC Boost::system)
 target_include_directories(tunet PUBLIC ${OPENSSL_INCLUDE_DIR})
-if(STATIC_BIN)
-    target_compile_options(tunet PRIVATE -Wl,--gc-sections)
-    target_link_libraries(tunet PRIVATE -static-libgcc -static-libstdc++)
-endif(STATIC_BIN)
 
 if (STRIP)
     add_custom_command(TARGET tunet POST_BUILD COMMAND
