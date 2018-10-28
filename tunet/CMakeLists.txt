@@ -86,7 +86,7 @@ target_link_libraries(tunet PUBLIC Boost::system OpenSSL::SSL)
 target_include_directories(tunet PUBLIC ${OPENSSL_INCLUDE_DIR})
 if(STATIC_BIN)
     target_compile_options(tunet PRIVATE -Wl,--gc-sections)
-    target_link_libraries(tunet PRIVATE -static)
+    target_link_libraries(tunet PRIVATE -static-libgcc -static-libstdc++)
 endif(STATIC_BIN)
 
 if (STRIP)
