@@ -15,7 +15,7 @@ ENV MIPSSTRIP=/mipsel-linux-uclibc/bin/mipsel-linux-strip
 
 RUN     apt-get update \
 && \
-        apt-get install -y unzip wget bzip2 cmake ninja-build upx \
+        apt-get install -y unzip wget bzip2 cmake ninja-build upx perl \
 && \
         mkdir /src \
 && \
@@ -27,7 +27,7 @@ RUN     apt-get update \
         cp -r * /mipsel-linux-uclibc \
 && \
         cd /src && \
-        wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2 -q && \
+        wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2 && \
         tar --bzip2 -xf boost_1_67_0.tar.bz2 && \
         cd boost_1_67_0 && \
         ./bootstrap.sh && \
@@ -35,7 +35,7 @@ RUN     apt-get update \
         ./b2 link=static runtime-link=static variant=release optimization=space --with-system --prefix=/boost install \
 && \
         cd /src && \
-        wget -q "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
+        wget "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
         unzip OpenSSL_1_0_2p.zip && \
         cd openssl-OpenSSL_1_0_2p && \
         PATH=/mipsel-linux-uclibc/bin:$PATH ./Configure linux-mips32 no-asm shared --cross-compile-prefix='mipsel-linux-muslsf-' && \
