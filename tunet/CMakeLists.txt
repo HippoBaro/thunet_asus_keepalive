@@ -94,5 +94,3 @@ if (STRIP)
             $ENV{MIPSSTRIP} --strip-unneeded $<TARGET_FILE:tunet>
             )
 endif (STRIP)
-
-
