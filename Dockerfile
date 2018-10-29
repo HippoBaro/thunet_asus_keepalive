@@ -2,9 +2,9 @@ FROM alpine:3.8
 MAINTAINER Hippolyte Barraud "hippolyte.barraud@gmail.com"
 
 ENV TARGET=mipsel-linux-muslsf
-ENV MIPSCXX=/mipsel-linux-uclibc/bin/mipsel-linux-muslsf-g++
-ENV MIPSCC=/mipsel-linux-uclibc/bin/mipsel-linux-muslsf-gcc
-ENV MIPSSTRIP=/mipsel-linux-uclibc/bin/mipsel-linux-muslsf-strip
+ENV MIPSCXX=/mipsel-linux-uclibc/bin/mipsel-linux-g++
+ENV MIPSCC=/mipsel-linux-uclibc/bin/mipsel-linux-gcc
+ENV MIPSSTRIP=/mipsel-linux-uclibc/bin/mipsel-linux-strip
 
 # Install basic build dependency and utils
 # Install LibC compat for CMake
@@ -25,15 +25,16 @@ RUN apk --update add --virtual build-dependencies \
 && \
         apk add cmake ninja upx \
 && \
-        mkdir /src && \
-        cd /src \
+        mkdir /src \
 && \
+        cd /src && \
         wget "https://toolchains.bootlin.com/downloads/releases/toolchains/mips32el/tarballs/mips32el--uclibc--stable-2018.02-1.tar.bz2" && \
         tar -jxf mips32el--uclibc--stable-2018.02-1.tar.bz2 && \
         cd mips32el--uclibc--stable-2018.02-1 && \
         mkdir /mipsel-linux-uclibc && \
         cp -r * /mipsel-linux-uclibc \
 && \
+        cd /src && \
         wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2 -q && \
         tar --bzip2 -xf boost_1_67_0.tar.bz2 && \
         cd boost_1_67_0 && \
