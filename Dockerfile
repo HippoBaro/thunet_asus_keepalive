@@ -22,7 +22,7 @@ RUN     apt-get update \
         cd /src &&\
         wget "https://cmake.org/files/v3.12/cmake-3.12.3-Linux-x86_64.sh" && \
         chmod +x cmake-3.12.3-Linux-x86_64.sh && \
-        ./cmake-3.12.3-Linux-x86_64.sh --skip-license \
+        ./cmake-3.12.3-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local \
 
 && \
         cd /src && \
