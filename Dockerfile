@@ -15,15 +15,9 @@ ENV MIPSSTRIP=/mipsel-linux-uclibc/bin/mipsel-linux-strip
 
 RUN     apt-get update \
 && \
-        apt-get install -y unzip wget bzip2 ninja-build upx perl \
+        apt-get install -y unzip wget bzip2 cmake ninja-build upx perl \
 && \
         mkdir /src \
-&& \
-        cd /src &&\
-        wget "https://cmake.org/files/v3.12/cmake-3.12.3-Linux-x86_64.sh" && \
-        chmod +x cmake-3.12.3-Linux-x86_64.sh && \
-        ./cmake-3.12.3-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local \
-
 && \
         cd /src && \
         wget "https://toolchains.bootlin.com/downloads/releases/toolchains/mips32el/tarballs/mips32el--uclibc--stable-2018.02-2.tar.bz2" && \
@@ -47,6 +41,14 @@ RUN     apt-get update \
         PATH=/mipsel-linux-uclibc/bin:$PATH ./Configure linux-mips32 no-asm shared --cross-compile-prefix='mipsel-linux-' && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make CC=$MIPSCC && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make install \
+&& \
+        apt-get remove cmake && \
+        apt-get purge --auto-remove cmake \
+&& \
+        cd /src &&\
+        wget "https://cmake.org/files/v3.12/cmake-3.12.3-Linux-x86_64.sh" && \
+        chmod +x cmake-3.12.3-Linux-x86_64.sh && \
+        ./cmake-3.12.3-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local \
 && \
         cd / && rm -rf /src
 
