@@ -21,8 +21,8 @@ RUN     apt-get update \
 && \
         cd /src && \
         wget "https://toolchains.bootlin.com/downloads/releases/toolchains/mips32el/tarballs/mips32el--uclibc--stable-2018.02-2.tar.bz2" && \
-        tar -jxf mips32el--uclibc--stable-2018.02-1.tar.bz2 && \
-        cd mips32el--uclibc--stable-2018.02-1 && \
+        tar -jxf mips32el--uclibc--stable-2018.02-2.tar.bz2 && \
+        cd mips32el--uclibc--stable-2018.02-2 && \
         mkdir /mipsel-linux-uclibc && \
         cp -r * /mipsel-linux-uclibc \
 && \
