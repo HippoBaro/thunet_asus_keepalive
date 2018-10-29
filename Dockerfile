@@ -42,8 +42,8 @@ RUN     apt-get update \
         PATH=/mipsel-linux-uclibc/bin:$PATH make CC=$MIPSCC && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make install \
 && \
-        apt-get remove -y cmake && \
-        apt-get purge --auto-remove cmake \
+        apt-get remove -y cmake perl unzip wget bzip2 && \
+        apt-get purge --auto-remove -y cmake perl unzip wget bzip2 \
 && \
         cd /src &&\
         wget "https://cmake.org/files/v3.12/cmake-3.12.3-Linux-x86_64.sh" && \
