@@ -13,7 +13,7 @@ ENV MIPSSTRIP=/mipsel-linux-uclibc/bin/mipsel-linux-strip
 # Build and install cross-compiled Boost
 # Clean everything and keep only cross-compiler toolchain, Boost and CMake.
 
-RUN     apt-get update
+RUN     apt-get update \
 && \
         apt-get install wget bzip2 cmake ninja upx \
 && \
