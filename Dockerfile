@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM debian:latest
 MAINTAINER Hippolyte Barraud "hippolyte.barraud@gmail.com"
 
 ENV TARGET=mipsel-linux-muslsf
@@ -13,22 +13,14 @@ ENV MIPSSTRIP=/mipsel-linux-uclibc/bin/mipsel-linux-strip
 # Build and install cross-compiled Boost
 # Clean everything and keep only cross-compiler toolchain, Boost and CMake.
 
-RUN apk --update add --virtual build-dependencies \
-        alpine-sdk \
-        xz \
-        wget \
-        automake \
-        autoconf \
-        git \
-        libtool \
-        perl \
+RUN     apt-get update
 && \
-        apk add cmake ninja upx \
+        apt-get install wget bzip2 cmake ninja upx \
 && \
         mkdir /src \
 && \
         cd /src && \
-        wget "https://toolchains.bootlin.com/downloads/releases/toolchains/mips32el/tarballs/mips32el--uclibc--stable-2018.02-1.tar.bz2" && \
+        wget "https://toolchains.bootlin.com/downloads/releases/toolchains/mips32el/tarballs/mips32el--uclibc--stable-2018.02-2.tar.bz2" && \
         tar -jxf mips32el--uclibc--stable-2018.02-1.tar.bz2 && \
         cd mips32el--uclibc--stable-2018.02-1 && \
         mkdir /mipsel-linux-uclibc && \
