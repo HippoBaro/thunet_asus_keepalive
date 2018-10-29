@@ -15,7 +15,7 @@ ENV MIPSSTRIP=/mipsel-linux-uclibc/bin/mipsel-linux-strip
 
 RUN     apt-get update \
 && \
-        apt-get install wget bzip2 cmake ninja-build upx \
+        apt-get install -y wget bzip2 cmake ninja-build upx \
 && \
         mkdir /src \
 && \
