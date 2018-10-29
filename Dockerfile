@@ -42,7 +42,7 @@ RUN     apt-get update \
         PATH=/mipsel-linux-uclibc/bin:$PATH make CC=$MIPSCC && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make install \
 && \
-        apt-get remove cmake && \
+        apt-get remove -y cmake && \
         apt-get purge --auto-remove cmake \
 && \
         cd /src &&\
