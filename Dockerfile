@@ -15,7 +15,7 @@ ENV MIPSSTRIP=/mipsel-linux-uclibc/bin/mipsel-linux-strip
 
 RUN     apt-get update \
 && \
-        apt-get install wget bzip2 cmake ninja upx \
+        apt-get install wget bzip2 cmake ninja-build upx \
 && \
         mkdir /src \
 && \
@@ -42,9 +42,7 @@ RUN     apt-get update \
         PATH=/mipsel-linux-uclibc/bin:$PATH make CC=/mipsel-linux-uclibc/bin/mipsel-linux-muslsf-gcc && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make install \
 && \
-        cd / && rm -rf /src && \
-        apk del build-dependencies && \
-        rm -rf /var/cache/apk/*
+        cd / && rm -rf /src
 
 ENV BOOST_ROOT /boost
 ENV CXX=/mipsel-linux-uclibc/bin/mipsel-linux-g++
