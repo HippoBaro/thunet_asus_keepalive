@@ -4,6 +4,7 @@ project(thunet_asus_keepalive CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 option(STRIP "Whether to strip the binary of unused symbols" ON)
+option(USE_TLS "Enable linking against OpenSSL for TLS support" OFF)
 
 set(Boost_USE_STATIC_LIBS TRUE)
 set(Boost_USE_STATIC_RUNTIME TRUE)
@@ -24,8 +25,12 @@ add_executable(thunet_asus_keepalive
         src/logger.hpp)
 
 target_include_directories(thunet_asus_keepalive PRIVATE src)
-set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
-target_link_libraries(thunet_asus_keepalive PRIVATE tunet Boost::system -static)
+target_link_libraries(thunet_asus_keepalive PRIVATE tunet Boost::system)
+if (DEV)
+else()
+    set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
+    target_link_libraries(thunet_asus_keepalive PRIVATE -static)
+endif()
 
 target_compile_options(thunet_asus_keepalive PRIVATE
         -fno-rtti

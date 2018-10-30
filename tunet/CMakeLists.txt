@@ -3,8 +3,10 @@ project(tunet CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(OPENSSL_USE_STATIC_LIBS TRUE)
-find_package(OpenSSL REQUIRED)
+if (USE_TLS)
+    set(OPENSSL_USE_STATIC_LIBS TRUE)
+    find_package(OpenSSL REQUIRED)
+endif ()
 
 add_library(tunet
         include/tunet.hpp
@@ -69,12 +71,25 @@ target_compile_options(tunet PRIVATE
         -Wl,--hash-style=gnu
         )
 
-target_compile_definitions(tunet PUBLIC BOOST_NO_RTTI BOOST_NO_TYPEID BOOST_EXCEPTION_DISABLE BOOST_NO_EXCEPTIONS)
+target_compile_definitions(tunet
+        PUBLIC
+            BOOST_NO_RTTI
+            BOOST_NO_TYPEID
+            BOOST_EXCEPTION_DISABLE
+            BOOST_NO_EXCEPTIONS
+        )
 
-set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
+target_link_libraries(tunet PUBLIC Boost::system)
+if (USE_TLS)
+    target_compile_definitions(tunet PRIVATE USE_TLS)
+    target_link_libraries(tunet PRIVATE OpenSSL::SSL)
+endif()
 
-target_link_libraries(tunet PUBLIC Boost::system OpenSSL::SSL -static)
-target_include_directories(tunet PUBLIC ${OPENSSL_INCLUDE_DIR})
+if (DEV)
+else()
+    set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
+    target_link_libraries(tunet PRIVATE -static)
+endif()
 
 if (STRIP)
     add_custom_command(TARGET tunet POST_BUILD COMMAND
