@@ -12,6 +12,7 @@
 #include <payloads/login_request.hpp>
 #include <payloads/logout_request.hpp>
 #include <payloads/challenge_response.hpp>
+#include <iostream>
 
 namespace boost {
     inline void throw_exception(std::exception const &) {
@@ -49,6 +50,8 @@ fetch(boost::beast::http::request<boost::beast::http::string_body> req, Socket &
         return {};
     }
 
+    std::cout << res << std::endl;
+
     return res;
 }
 
@@ -60,6 +63,8 @@ fetch(boost::beast::http::request<boost::beast::http::string_body> req, Socket &
     if (ec || !res) {
         return {};
     }
+
+    std::cout << res << std::endl;
 
     auto response = Response(res->body(), ec);
     if (ec) {
