@@ -42,7 +42,7 @@ RUN     apt-get update \
             -fsingle-precision-constant \
             -ffast-math \
             -Wl,-z,norelro \
-            -Wl,--hash-style=gnu --cross-compile-prefix='mipsel-linux-' -Os -s  && \
+            --cross-compile-prefix='mipsel-linux-' -Os -s  && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make CC=$MIPSCC && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make install \
 && \
