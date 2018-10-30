@@ -44,8 +44,6 @@ RUN     apt-get update \
             -Wl,-z,norelro \
             -Wl,--hash-style=gnu --cross-compile-prefix='mipsel-linux-' -Os -s  && \
         sed -i -e 's/O3/Os/g' Makefile.org && \
-        make dclean \
-        ./config \
         PATH=/mipsel-linux-uclibc/bin:$PATH make CC=$MIPSCC && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make install \
 && \
