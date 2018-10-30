@@ -27,14 +27,6 @@ RUN     apt-get update \
         cp -r * /mipsel-linux-uclibc \
 && \
         cd /src && \
-        wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2 && \
-        tar --bzip2 -xf boost_1_67_0.tar.bz2 && \
-        cd boost_1_67_0 && \
-        ./bootstrap.sh && \
-        echo "using gcc : : $MIPSCXX ;"  >> tools/build/src/user-config.jam && \
-        ./b2 link=static runtime-link=static variant=release optimization=space --with-system --prefix=/boost install \
-&& \
-        cd /src && \
         wget "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
         unzip OpenSSL_1_0_2p.zip && \
         cd openssl-OpenSSL_1_0_2p && \
@@ -51,11 +43,19 @@ RUN     apt-get update \
             -ffast-math \
             -Wl,-z,norelro \
             -Wl,--hash-style=gnu --cross-compile-prefix='mipsel-linux-' -Os -s  && \
-        sed -i "" 's/CFLAG= -O/CFLAG= -Os/g' Makefile.org && \
+        sed -i -e 's/O3/Os/g' Makefile.org && \
         make dclean \
         ./config \
         PATH=/mipsel-linux-uclibc/bin:$PATH make CC=$MIPSCC && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make install \
+&& \
+        cd /src && \
+        wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2 && \
+        tar --bzip2 -xf boost_1_67_0.tar.bz2 && \
+        cd boost_1_67_0 && \
+        ./bootstrap.sh && \
+        echo "using gcc : : $MIPSCXX ;"  >> tools/build/src/user-config.jam && \
+        ./b2 link=static runtime-link=static variant=release optimization=space --with-system --prefix=/boost install \
 && \
         apt-get remove -y cmake && \
         apt-get purge --auto-remove -y cmake \
