@@ -30,7 +30,7 @@ RUN     apt-get update \
         wget "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
         unzip OpenSSL_1_0_2p.zip && \
         cd openssl-OpenSSL_1_0_2p && \
-        PATH=/mipsel-linux-uclibc/bin:$PATH ./Configure linux-mips32 no-asm \
+        PATH=/mipsel-linux-uclibc/bin:$PATH ./Configure linux-mips32 no-shared no-zlib no-asm no-threads no-asm \
             -fdata-sections -ffunction-sections \
             -Wl,--gc-sections \
             -fno-stack-protector \
