@@ -2,9 +2,9 @@ FROM debian:latest
 MAINTAINER Hippolyte Barraud "hippolyte.barraud@gmail.com"
 
 ENV TARGET=mipsel-linux-muslsf
-ENV MIPSCXX=/mipsel-linux-uclibc/bin/mipsel-linux-g++
-ENV MIPSCC=/mipsel-linux-uclibc/bin/mipsel-linux-gcc
-ENV MIPSSTRIP=/mipsel-linux-uclibc/bin/mipsel-linux-strip
+ENV MIPSCXX=/mipsel-linux-musl/bin/mipsel-linux-g++
+ENV MIPSCC=/mipsel-linux-musl/bin/mipsel-linux-gcc
+ENV MIPSSTRIP=/mipsel-linux-musl/bin/mipsel-linux-strip
 
 # Install basic build dependency and utils
 # Install LibC compat for CMake
@@ -20,17 +20,17 @@ RUN     apt-get update \
         mkdir /src \
 && \
         cd /src && \
-        wget "https://toolchains.bootlin.com/downloads/releases/toolchains/mips32el/tarballs/mips32el--uclibc--stable-2018.02-2.tar.bz2" && \
-        tar -jxf mips32el--uclibc--stable-2018.02-2.tar.bz2 && \
-        cd mips32el--uclibc--stable-2018.02-2 && \
-        mkdir /mipsel-linux-uclibc && \
-        cp -r * /mipsel-linux-uclibc \
+        wget "https://toolchains.bootlin.com/downloads/releases/toolchains/mips32el/tarballs/mips32el--musl--bleeding-edge-2018.07-3.tar.bz2" && \
+        tar -jxf mips32el--musl--bleeding-edge-2018.07-3.tar.bz2 && \
+        cd mips32el--musl--bleeding-edge-2018.07-3 && \
+        mkdir /mipsel-linux-musl && \
+        cp -r * /mipsel-linux-musl \
 && \
         cd /src && \
         wget "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
         unzip OpenSSL_1_0_2p.zip && \
         cd openssl-OpenSSL_1_0_2p && \
-        PATH=/mipsel-linux-uclibc/bin:$PATH ./Configure linux-mips32 no-shared no-zlib no-asm no-threads no-asm \
+        PATH=/mipsel-linux-musl/bin:$PATH ./Configure linux-mips32 no-shared no-zlib no-asm no-threads no-asm \
             -fdata-sections -ffunction-sections \
             -Wl,--gc-sections \
             -fno-stack-protector \
@@ -43,8 +43,8 @@ RUN     apt-get update \
             -ffast-math \
             -Wl,-z,norelro \
             --cross-compile-prefix='mipsel-linux-' -Os -s  && \
-        PATH=/mipsel-linux-uclibc/bin:$PATH make CC=$MIPSCC && \
-        PATH=/mipsel-linux-uclibc/bin:$PATH make install \
+        PATH=/mipsel-linux-musl/bin:$PATH make CC=$MIPSCC && \
+        PATH=/mipsel-linux-musl/bin:$PATH make install \
 && \
         cd /src && \
         wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2 && \
@@ -68,7 +68,7 @@ RUN     apt-get update \
         apt-get purge --auto-remove -y perl unzip wget bzip2
 
 ENV BOOST_ROOT /boost
-ENV CXX=/mipsel-linux-uclibc/bin/mipsel-linux-g++
-ENV CC=/mipsel-linux-uclibc/bin/mipsel-linux-gcc
+ENV CXX=/mipsel-linux-musl/bin/mipsel-linux-g++
+ENV CC=/mipsel-linux-musl/bin/mipsel-linux-gcc
 
 WORKDIR /home
