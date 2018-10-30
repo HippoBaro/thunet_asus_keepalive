@@ -3,13 +3,7 @@ project(tunet CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
-option(STATIC_BIN "Compile to static binary" ON)
-
-set(Boost_USE_STATIC_LIBS STATIC_BIN)
-set(Boost_USE_STATIC_RUNTIME STATIC_BIN)
-find_package(Boost 1.67 COMPONENTS system REQUIRED)
-
-set(OPENSSL_USE_STATIC_LIBS FALSE)
+set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
 
 add_library(tunet
@@ -77,16 +71,9 @@ target_compile_options(tunet PRIVATE
 
 target_compile_definitions(tunet PUBLIC BOOST_NO_RTTI BOOST_NO_TYPEID BOOST_EXCEPTION_DISABLE BOOST_NO_EXCEPTIONS)
 
-target_link_libraries(tunet PUBLIC OpenSSL::SSL)
+set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
 
-if (STATIC_BIN)
-    SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
-    set_target_properties(tunet PROPERTIES LINK_SEARCH_START_STATIC 1)
-    set_target_properties(tunet PROPERTIES LINK_SEARCH_END_STATIC 1)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-endif (STATIC_BIN)
-
-target_link_libraries(tunet PUBLIC Boost::system)
+target_link_libraries(tunet PUBLIC Boost::system OpenSSL::SSL -static)
 target_include_directories(tunet PUBLIC ${OPENSSL_INCLUDE_DIR})
 
 if (STRIP)

@@ -5,9 +5,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 set(CMAKE_CXX_STANDARD 17)
 
-option(STATIC_BIN "Compile to static binary" ON)
 option(STRIP "Whether to strip the binary of unused symbols" ON)
 
+set(Boost_USE_STATIC_LIBS TRUE)
+set(Boost_USE_STATIC_RUNTIME TRUE)
 find_package(Boost 1.67 COMPONENTS system REQUIRED)
 add_subdirectory(tunet)
 
@@ -25,11 +26,8 @@ add_executable(thunet_asus_keepalive
         src/logger.hpp)
 
 target_include_directories(thunet_asus_keepalive PRIVATE src)
-
-target_link_libraries(thunet_asus_keepalive PRIVATE tunet Boost::system)
-if(STATIC_BIN)
-    SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
-endif(STATIC_BIN)
+set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -static-libgcc -static-libstdc++")
+target_link_libraries(thunet_asus_keepalive PRIVATE tunet Boost::system -static)
 
 target_compile_options(thunet_asus_keepalive PRIVATE
         -fno-rtti
