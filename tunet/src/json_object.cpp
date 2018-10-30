@@ -32,6 +32,7 @@ boost::optional<double> json_object::operator[](boost::string_view name) const n
             return item->value.toNumber();
         }
     }
+    printf("didn't find name in json\n");
     return {};
 }
 

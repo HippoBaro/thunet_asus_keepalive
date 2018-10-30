@@ -157,7 +157,7 @@ namespace tunet {
           boost::system::error_code &ec) noexcept {
         return connect(ioc, ec, [&](auto &socket) -> boost::optional<tunet::payloads::login_response> {
             tunet::payloads::challenge_request challenge_req(username, "");
-            auto token = post<payloads::challenge_request, payloads::challenge_response>("/cgi-bin/get_challenge",
+            boost::optional<payloads::challenge_response> token = post<payloads::challenge_request, payloads::challenge_response>("/cgi-bin/get_challenge",
                                                                                          socket, challenge_req, ec);
             if (ec || !token) {
                 return {};

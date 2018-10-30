@@ -15,17 +15,21 @@ tunet::payloads::login_request::login_request(boost::string_view username, boost
                                               boost::string_view, boost::string_view challenge) : username(username),
                                                                                                   password(password),
                                                                                                   ip("") {
+    printf("creating login\n");
     auto payload = boost::algorithm::join<std::initializer_list<std::string>>(
             {R"({"username":")", username.to_string(), R"(","password":")", password.to_string(), R"(","ip":")",
              this->ip, R"(","acid":")", _ac_id, R"(","enc_ver":")", "srun_bx1", R"("})"}, "");
 
+    printf("base64\n");
     _info = "{SRBX1}" + base64_encode(utf8_to_latin9(xEncode(payload, challenge)),
                                       "LVoJPiCN2R8G90yg+hmFHuacZ1OWMnrsSTXkYpUq/3dlbfKwv6xztjI7DeBE45QA");
 
+    printf("hmac\n");
     auto hmd5 = hmac<MD5>("pwd", challenge);
     this->password = "{MD5}" + hmd5;
     auto chalss = challenge.to_string();
 
+    printf("sha1\n");
     _chksum = SHA1()(boost::algorithm::join<std::initializer_list<std::string>>(
             {chalss, this->username, chalss, hmd5, chalss, _ac_id, chalss, this->ip, chalss, _n, chalss, _type, chalss,
              _info}, ""));
