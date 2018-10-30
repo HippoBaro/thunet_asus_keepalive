@@ -163,8 +163,10 @@ namespace tunet {
                 return {};
             }
 
+            printf("Got response\n");
             tunet::payloads::login_request request(username, password, "",
                                                    *token->template operator[]<boost::string_view>("challenge"));
+            printf("Got challenge\n");
             auto response = post<payloads::login_request, payloads::login_response>("/cgi-bin/srun_portal", socket,
                                                                                     request, ec);
             if (response) {
