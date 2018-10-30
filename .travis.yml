@@ -8,11 +8,10 @@ before_install:
 - docker pull hippobaro/asuswrt-musl-crosscompile
 
 script:
-- docker run -v `pwd`:/home --tty --rm hippobaro/asuswrt-musl-crosscompile:latest sh -c "mkdir build ; cd build && cmake -DOPENSSL_ROOT_DIR=/usr/local/ssl/ -DCMAKE_TOOLCHAIN_FILE=../ASUS-RT-AC51U-toolchain.cmake -DSTRIP=ON -DUSE_TLS=ON -GNinja .. && ninja"
-- cp build/thunet_asus_keepalive tunet_tls
-- rm -rf build
-- docker run -v `pwd`:/home --tty --rm hippobaro/asuswrt-musl-crosscompile:latest sh -c "mkdir build ; cd build && cmake -DCMAKE_TOOLCHAIN_FILE=../ASUS-RT-AC51U-toolchain.cmake -DSTRIP=ON -DUSE_TLS=OFF -GNinja .. && ninja"
-- cp build/thunet_asus_keepalive tunet_notls
+- docker run -v `pwd`:/home --tty --rm hippobaro/asuswrt-musl-crosscompile:latest sh -c "mkdir build_tls ; cd build_tls && cmake -DOPENSSL_ROOT_DIR=/usr/local/ssl/ -DCMAKE_TOOLCHAIN_FILE=../ASUS-RT-AC51U-toolchain.cmake -DSTRIP=ON -DUSE_TLS=ON -GNinja .. && ninja"
+- cp build_tls/thunet_asus_keepalive tunet_tls
+- docker run -v `pwd`:/home --tty --rm hippobaro/asuswrt-musl-crosscompile:latest sh -c "mkdir build_notls ; cd build_notls && cmake -DCMAKE_TOOLCHAIN_FILE=../ASUS-RT-AC51U-toolchain.cmake -DSTRIP=ON -DUSE_TLS=OFF -GNinja .. && ninja"
+- cp build_notls/thunet_asus_keepalive tunet_notls
 
 deploy:
   provider: releases
