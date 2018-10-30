@@ -1,11 +1,6 @@
 sudo: required
 language: cpp
 
-addons:
-  apt:
-    packages:
-    - docker-ce
-
 services:
 - docker
 
@@ -13,17 +8,22 @@ before_install:
 - docker pull hippobaro/asuswrt-musl-crosscompile
 
 script:
-- chmod +x build.sh
-- "./build.sh"
+- docker run -v `pwd`:/home --tty --rm hippobaro/asuswrt-musl-crosscompile:latest sh -c "mkdir build ; cd build && cmake -DOPENSSL_ROOT_DIR=/usr/local/ssl/ -DCMAKE_TOOLCHAIN_FILE=../ASUS-RT-AC51U-toolchain.cmake -DSTRIP=ON -DUSE_TLS=ON -GNinja .. && ninja"
+- cp build/thunet_asus_keepalive tunet_tls
+- rm -rf build
+- docker run -v `pwd`:/home --tty --rm hippobaro/asuswrt-musl-crosscompile:latest sh -c "mkdir build ; cd build && cmake -DCMAKE_TOOLCHAIN_FILE=../ASUS-RT-AC51U-toolchain.cmake -DSTRIP=ON -DUSE_TLS=OFF -GNinja .. && ninja"
+- cp build/thunet_asus_keepalive tunet_notls
 
 deploy:
   provider: releases
   api_key:
     secure: J/uHXpCzDAwTlmv46U62RgVnky0b5Dx77C5JP8YcW/v8sA2Pg4Em9GNcx7r2lnfCsd2ZJDahwTxZzKD6FY2Kuy6znBCumk4F0ltpslcoSin4kt17qzUcd8+mZzRSCdZoh7X0kn9ALRiLuCJjYNuoE+UaYHSNZeX7njwW4fw/VSmiq5xMqJfaoqL+s9RvrCcpFPYIIVWnO4dtKmgV3OM5i5lcokM0DhQqEiQl7dAhZOtBZX2lG6XfsW0cz+kOu4zO+zlkdVXU6qQVtedtjr9LCLFq/pxi2csbGHCWoUzFOI2eHCzz3IlG6Wpxn2g7jlPLyyLqs6Fkx9qK4esfsvVbp7pd+gJ2YhQJHztsGhaT8cTpy326jksEbTtxdg98YxOzw467FRg+LwlmGomMYB85F4x08sCjl3kSfQd3f8VDYQXmirjHDY3V4ok7A9AqEEp9d6Fp6iOTSpNPp2tK2a5eFdiL1dXp4ulbQKg6BBM8hPrF5lbgsnkJG7+Ox1+wwYKRruL/geDCNhwVxsjj5G7s38uRxTRRpYfC0G6mEAgtkE2byiy/mm6xqfYjXXpvyiGzWkhErAJc5zGPdqGugJ1IVT9hfF1OR+v8mWQj0z1so5sgov1qBiSvsBALY49a8uDbiONJ4L8sJ6KoGIrIMqptoQdmPTalOLvt7cXwrOTwMdc=
-  file: build/thunet_asus_keepalive
+  file:
+    - tunet_tls
+    - tunet_notls
   skip_cleanup: true
   name: v.$(git log -1 --format=%ad --date=format:'%Y-%m-%d')-$(git describe --match=NeVeRmAtCh --always --dirty)
-  body: "SHA1 : $(sha1sum build/thunet_asus_keepalive)"
+  body: "tunet_tls SHA1 : $(sha1sum tunet_tls)\ntunet_notls SHA1 : $(sha1sum tunet_notls)"
   on:
     repo: HippoBaro/thunet_asus_keepalive
     tags: true
