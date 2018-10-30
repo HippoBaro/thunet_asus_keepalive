@@ -38,7 +38,7 @@ RUN     apt-get update \
         wget "https://github.com/openssl/openssl/archive/OpenSSL_1_0_2p.zip" && \
         unzip OpenSSL_1_0_2p.zip && \
         cd openssl-OpenSSL_1_0_2p && \
-        PATH=/mipsel-linux-uclibc/bin:$PATH ./Configure linux-mips32 no-asm -ffunction-sections -fdata-sections --cross-compile-prefix='mipsel-linux-' && \
+        PATH=/mipsel-linux-uclibc/bin:$PATH ./Configure linux-mips32 no-asm -Os -s -ffunction-sections -fdata-sections --cross-compile-prefix='mipsel-linux-' && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make CC=$MIPSCC && \
         PATH=/mipsel-linux-uclibc/bin:$PATH make install \
 && \
