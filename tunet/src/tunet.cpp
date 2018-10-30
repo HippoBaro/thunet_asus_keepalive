@@ -64,8 +64,6 @@ fetch(boost::beast::http::request<boost::beast::http::string_body> req, Socket &
         return {};
     }
 
-    std::cout << res << std::endl;
-
     auto response = Response(res->body(), ec);
     if (ec) {
         return {};
