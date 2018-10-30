@@ -54,7 +54,7 @@ target_compile_definitions(thunet_asus_keepalive PRIVATE BOOST_NO_RTTI BOOST_NO_
 
 if (STRIP)
     add_custom_command(TARGET thunet_asus_keepalive POST_BUILD COMMAND
-            $ENV{MIPSSTRIP} --strip-unneeded $<TARGET_FILE:thunet_asus_keepalive>
+            $ENV{MIPSSTRIP} --strip-all $<TARGET_FILE:thunet_asus_keepalive>
             && upx -qq --ultra-brute $<TARGET_FILE:thunet_asus_keepalive>
             )
 endif (STRIP)
