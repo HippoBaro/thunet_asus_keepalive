@@ -7,7 +7,6 @@
 #ifndef THUNET_ASUS_KEEPALIVE_PERIODIC_TASK_HPP
 #define THUNET_ASUS_KEEPALIVE_PERIODIC_TASK_HPP
 
-#include <chrono>
 #include <boost/asio/io_context.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/utility/string_view.hpp>

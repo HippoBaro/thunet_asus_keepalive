@@ -5,7 +5,6 @@
 #ifndef THUNET_ASUS_KEEPALIVE_PERIODIC_SCHEDULER_HPP
 #define THUNET_ASUS_KEEPALIVE_PERIODIC_SCHEDULER_HPP
 
-#include <chrono>
 #include <boost/noncopyable.hpp>
 #include <error_code.hpp>
 #include <boost/utility/string_view.hpp>

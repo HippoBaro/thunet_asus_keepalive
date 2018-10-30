@@ -28,8 +28,6 @@
 
 #include <cstring> // memcpy
 #include <boost/utility/string_view.hpp>
-#include <iomanip>
-#include <sstream>
 
 /// compute HMAC hash of data and key using MD5, SHA1 or SHA256
 template <typename HashMethod>

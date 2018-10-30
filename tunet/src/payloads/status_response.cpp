@@ -27,7 +27,7 @@ tunet::payloads::status_response::status_response(boost::string_view content, bo
     egress = std::stoull(elements[4]);
     //5 unknown
     traffic = std::stoull(elements[6]);
-    connected_time = std::chrono::seconds(std::stoull(elements[7]));
+    connected_time = std::stoull(elements[7]);
     ipv4 = elements[8];
     //9 unknown
     //10 unknown

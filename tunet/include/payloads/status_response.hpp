@@ -5,7 +5,6 @@
 #ifndef THUNET_ASUS_KEEPALIVE_STATUS_RESPONSE_HPP
 #define THUNET_ASUS_KEEPALIVE_STATUS_RESPONSE_HPP
 
-#include <chrono>
 #include <boost/utility/string_view.hpp>
 #include <boost/system/error_code.hpp>
 
@@ -20,7 +19,7 @@ namespace tunet::payloads {
         std::size_t egress;
         int unknown;
         std::size_t traffic;
-        std::chrono::seconds connected_time;
+        std::size_t connected_time;
         std::string ipv4;
         int unknown2;
         int unknown3;
